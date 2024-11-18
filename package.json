@@ -1,0 +1,38 @@
+{
+  "name": "@markandrus/effect-derive",
+  "version": "0.1.0",
+  "description": "Derive Covariant (Functor) instances for algebraic data types (ADTs)",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    "import": "lib/index.js",
+    "module-sync": "lib/index.js",
+    "types": "lib/index.d.ts"
+  },
+  "files": [
+    "lib/index.js"
+  ],
+  "bin": {
+    "effect-derive": "bin/effect-derive.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "generate:listCovariant": "node --experimental-strip-types src/index.ts Covariant --for-type List --discriminator type --in-file src/List.d.ts --out-file src/listCovariant.ts",
+    "generate:nonEmptyListCovariant": "node --experimental-strip-types src/index.ts Covariant --for-type NonEmptyList --in-file src/NonEmptyList.d.ts --out-file src/nonEmptyListCovariant.ts",
+    "generate:roseTreeCovariant": "node --experimental-strip-types src/index.ts Covariant --for-type RoseTree --in-file src/RoseTree.d.ts --out-file src/roseTreeCovariant.ts",
+    "prepublish": "tsc"
+  },
+  "keywords": ["effect", "deriving", "functor", "covariant"],
+  "author": "Mark Roberts <markandrusroberts@gmail.com>",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "@effect/typeclass": "^0.29.15",
+    "effect": "^3.10.15",
+    "ts-morph": "^24.0.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node22": "^22.0.0",
+    "@types/node": "^22.9.0",
+    "typescript": "^5.6.3"
+  }
+}

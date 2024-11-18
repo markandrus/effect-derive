@@ -1,0 +1,12 @@
+{
+  "extends": "@tsconfig/node22/tsconfig.json",
+  "include": [
+    "src/**/*.ts"
+  ],
+  "compilerOptions": {
+    "module": "preserve",
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "outDir": "lib"
+  }
+}
