@@ -17,7 +17,7 @@ export function deriveBaseFunctor (_inFilePath: string, forType: string, discrim
     newTyParamName = `X${i + 1}`
   }
 
-  node.insertTypeParameter(1, {
+  node.insertTypeParameter(tyParams.length, {
     name: newTyParamName
   })
 

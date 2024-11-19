@@ -30,8 +30,9 @@ npx @markandrus/effect-derive Covariant \
   --out-file src/listCovariant.ts
 ```
 
-You can see a copy of this file checked into the repository. There are also
-examples for NonEmptyList and RoseTree:
+You can see a copy of this file checked into the repository.
+
+There are also examples for NonEmptyList and RoseTree:
 
 ```ts
 // src/NonEmptyList.d.ts
@@ -62,6 +63,17 @@ npx @markandrus/effect-derive BaseFunctor \
   --discriminator type \
   --in-file src/List.d.ts \
   --out-file src/ListF.ts
+```
+
+You can see a copy of this file checked into the repository.
+
+There is also an example for Peano:
+
+```ts
+// src/Peano.d.ts
+export type Peano
+  = { type: 'Z' }
+  | { type: 'S', succ: Peano }
 ```
 
 Limitations
