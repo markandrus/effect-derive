@@ -45,44 +45,28 @@ function fromArray<A> (as: A[]): List<A> {
   })(as)
 }
 
-test('toArray implemented using cata', () => {
-  const list: List<number> = {
+const list: List<number> = {
+  type: 'Cons',
+  head: 1,
+  tail: {
     type: 'Cons',
-    head: 1,
+    head: 2,
     tail: {
       type: 'Cons',
-      head: 2,
+      head: 3,
       tail: {
-        type: 'Cons',
-        head: 3,
-        tail: {
-          type: 'Nil'
-        }
+        type: 'Nil'
       }
     }
   }
-  const actual = toArray(list)
-  const expected = [1, 2, 3]
-  assert.deepStrictEqual(actual, expected)
+}
+
+const array = [1, 2, 3]
+
+test('toArray implemented using cata', () => {
+  assert.deepStrictEqual(toArray(list), array)
 })
 
 test('fromArray implemented using ana', () => {
-  const as = [1, 2, 3]
-  const actual = fromArray(as)
-  const expected: List<number> = {
-    type: 'Cons',
-    head: 1,
-    tail: {
-      type: 'Cons',
-      head: 2,
-      tail: {
-        type: 'Cons',
-        head: 3,
-        tail: {
-          type: 'Nil'
-        }
-      }
-    }
-  }
-  assert.deepStrictEqual(actual, expected)
+  assert.deepStrictEqual(fromArray(array), list)
 })
