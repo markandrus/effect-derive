@@ -1,31 +1,82 @@
 import * as assert from 'node:assert'
 import { test } from 'node:test'
 
+import { type TypeLambda } from 'effect/HKT'
+
+import { ana, type Corecursive } from '../src/Corecursive'
 import { type List } from '../src/List'
-import { type ListF, listFCovariant } from '../src/ListF'
+import { type ListTypeLambda } from '../src/listCovariant'
+import { listFCovariant, type ListFTypeLambda } from '../src/ListF'
+import { type Peano } from '../src/Peano'
+import { peanoFCovariant, type PeanoFTypeLambda } from '../src/PeanoF'
+import { cata, type Recursive } from '../src/Recursive'
 
-function project<A> (list: List<A>): ListF<A, List<A>> {
-  return list
+export interface PeanoTypeLambda extends TypeLambda {
+  readonly type: Peano
 }
 
-function embed<A> (listF: ListF<A, List<A>>): List<A> {
-  return listF
+const peanoRecursive: Recursive<PeanoTypeLambda, PeanoFTypeLambda> = {
+  F: peanoFCovariant,
+  project: t => t
 }
 
-function cata<A, B> (f: (listF: ListF<A, B>) => B): (list: List<A>) => B {
-  return function go(list: List<A>): B {
-    return f(listFCovariant.map(project(list), go))
+const peanoCorecursive: Corecursive<PeanoTypeLambda, PeanoFTypeLambda> = {
+  F: peanoFCovariant,
+  embed: t => t
+}
+
+function toNumber (peano: Peano): number {
+  return cata(peanoRecursive)<number, number>(peanoF => {
+    switch (peanoF.type) {
+      case 'Z':
+        return 0
+      case 'S':
+        return peanoF.succ + 1
+    }
+  })(peano)
+}
+
+function fromNumber (number: number): Peano {
+  return ana(peanoCorecursive)<number, number>(number => {
+    return number <= 0
+      ? { type: 'Z' }
+      : { type: 'S', succ: number - 1 }
+  })(number)
+}
+
+const peano: Peano = {
+  type: 'S',
+  succ: {
+    type: 'S',
+    succ: {
+      type: 'S',
+      succ: {
+        type: 'Z'
+      }
+    }
   }
 }
 
-function ana<A, B> (g: (b: B) => ListF<A, B>): (b: B) => List<A> {
-  return function go(b: B): List<A> {
-    return embed(listFCovariant.map(g(b), go))
-  }
+test('toNumber implemented using cata', () => {
+  assert.deepStrictEqual(toNumber(peano), 3)
+})
+
+test('fromNumber implemented using ana', () => {
+  assert.deepStrictEqual(fromNumber(3), peano)
+})
+
+const listRecursive: Recursive<ListTypeLambda, ListFTypeLambda> = {
+  F: listFCovariant,
+  project: t => t
+}
+
+const listCorecursive: Corecursive<ListTypeLambda, ListFTypeLambda> = {
+  F: listFCovariant,
+  embed: t => t
 }
 
 function toArray<A> (list: List<A>): A[] {
-  return cata<A, A[]>(listF => {
+  return cata(listRecursive)<A, A[]>(listF => {
     switch (listF.type) {
       case 'Nil':
         return []
@@ -36,7 +87,7 @@ function toArray<A> (list: List<A>): A[] {
 }
 
 function fromArray<A> (as: A[]): List<A> {
-  return ana<A, A[]>(as => {
+  return ana(listCorecursive)<A, A[]>(as => {
     if (as.length === 0) {
       return { type: 'Nil' }
     } else {

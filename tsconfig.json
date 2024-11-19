@@ -4,6 +4,7 @@
     "src/**/*.ts"
   ],
   "compilerOptions": {
+    "declaration": true,
     "module": "preserve",
     "moduleResolution": "node",
     "rootDir": "src",

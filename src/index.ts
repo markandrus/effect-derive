@@ -5,9 +5,12 @@ import * as util from 'node:util'
 
 import { Node, Project } from 'ts-morph'
 
-import { deriveBaseFunctor } from './deriveBaseFunctor.js'
-import { deriveCovariant } from './deriveCovariant.js'
-import { OutFile } from './OutFile.js'
+import { deriveBaseFunctor } from './deriveBaseFunctor'
+import { deriveCovariant } from './deriveCovariant'
+import { OutFile } from './OutFile'
+
+export * from './Corecursive'
+export * from './Recursive'
 
 export function main () {
   const {
