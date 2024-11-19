@@ -25,7 +25,8 @@
     "generate:nonEmptyListCovariant": "tsx src/index.ts Covariant --for-type NonEmptyList --in-file src/NonEmptyList.d.ts --out-file src/nonEmptyListCovariant.ts",
     "generate:PeanoF": "tsx src/index.ts BaseFunctor --for-type Peano --discriminator type --in-file src/Peano.d.ts --out-file src/PeanoF.ts",
     "generate:roseTreeCovariant": "tsx src/index.ts Covariant --for-type RoseTree --in-file src/RoseTree.d.ts --out-file src/roseTreeCovariant.ts",
-    "prepublish": "tsc"
+    "prepublish": "tsc",
+    "test": "tsx test/index.ts"
   },
   "keywords": [
     "effect",

@@ -94,6 +94,7 @@ Install, generate, and build everything as follows:
 pnpm install
 pnpm run "/^generate:.*/"
 pnpm build
+pnpm test
 ```
 
 [effect]: https://github.com/Effect-TS/effect/
