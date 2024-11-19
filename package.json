@@ -1,7 +1,7 @@
 {
   "name": "@markandrus/effect-derive",
-  "version": "0.1.0",
-  "description": "Derive Covariant (Functor) instances for algebraic data types (ADTs)",
+  "version": "0.1.1",
+  "description": "Derive Covariant (Functor) instances and base functors for algebraic data types (ADTs)",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
@@ -10,6 +10,7 @@
     "types": "lib/index.d.ts"
   },
   "files": [
+    "lib/deriveBaseFunctor.js",
     "lib/deriveCovariant.js",
     "lib/index.js",
     "lib/OutFile.js"
@@ -19,6 +20,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "generate:ListF": "tsx src/index.ts BaseFunctor --for-type List --discriminator type --in-file src/List.d.ts --out-file src/ListF.ts",
     "generate:listCovariant": "tsx src/index.ts Covariant --for-type List --discriminator type --in-file src/List.d.ts --out-file src/listCovariant.ts",
     "generate:nonEmptyListCovariant": "tsx src/index.ts Covariant --for-type NonEmptyList --in-file src/NonEmptyList.d.ts --out-file src/nonEmptyListCovariant.ts",
     "generate:roseTreeCovariant": "tsx src/index.ts Covariant --for-type RoseTree --in-file src/RoseTree.d.ts --out-file src/roseTreeCovariant.ts",
@@ -28,7 +30,8 @@
     "effect",
     "deriving",
     "functor",
-    "covariant"
+    "covariant",
+    "recursion-schemes"
   ],
   "author": "Mark Roberts <markandrusroberts@gmail.com>",
   "license": "BSD-3-Clause",

@@ -4,7 +4,7 @@ import { OutFile } from './OutFile'
 
 const tyParamPlaceholders = ['C', 'D']
 
-export function deriveCovariant (inFilePath: string, forType: string, discriminator: string | undefined, node: TypeAliasDeclaration): OutFile {
+export function deriveCovariant (inFilePath: string | undefined, forType: string, discriminator: string | undefined, node: TypeAliasDeclaration): OutFile {
   const outFile = new OutFile()
 
   const tyParams = node.getTypeParameters()
@@ -45,7 +45,8 @@ export function deriveCovariant (inFilePath: string, forType: string, discrimina
     .addPackageAsteriskImport('@effect/typeclass/Covariant', 'covariant')
     .addPackageImport('effect/Function', 'dual')
     .addPackageImport('effect/HKT', 'TypeLambda', true)
-    .addLocalImport(inFilePath, forType, true)
+
+  if (inFilePath != null) outFile.addLocalImport(inFilePath, forType, true)
 
   return outFile.addDeclarations(`\
 export interface ${forType}TypeLambda extends TypeLambda {

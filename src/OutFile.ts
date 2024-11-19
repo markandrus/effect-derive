@@ -41,6 +41,12 @@ export class OutFile {
   }
 
   merge (other: OutFile): this {
+    for (const [module, imports] of other.packageAsteriskImports) {
+      for (const [alias, isTypeImport] of imports) {
+        this.addPackageAsteriskImport(module, alias, isTypeImport)
+      }
+    }
+
     for (const [module, imports] of other.packageImports) {
       for (const [imported, isTypeImport] of imports) {
         this.addPackageImport(module, imported, isTypeImport)

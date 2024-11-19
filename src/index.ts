@@ -5,6 +5,7 @@ import * as util from 'node:util'
 
 import { Node, Project } from 'ts-morph'
 
+import { deriveBaseFunctor } from './deriveBaseFunctor.js'
 import { deriveCovariant } from './deriveCovariant.js'
 import { OutFile } from './OutFile.js'
 
@@ -22,9 +23,10 @@ export function main () {
     }
   })
 
-  if (positionals.length !== 1 || positionals[0] !== 'Covariant') {
-    throw new Error('Expected exactly one positional argument "Covariant"')
+  if (positionals.length !== 1 || (positionals[0] !== 'Covariant' && positionals[0] !== 'BaseFunctor')) {
+    throw new Error('Expected exactly one positional argument "Covariant" or "BaseFunctor"')
   }
+  const action: 'Covariant' | 'BaseFunctor' = positionals[0]
 
   let inFilePath = values['in-file']
   if (inFilePath == null) {
@@ -53,7 +55,9 @@ export function main () {
   for (const node of inFile.getChildSyntaxListOrThrow().getChildren()) {
     if (Node.isTypeAliasDeclaration(node)) {
       if (node.getName() === forType) {
-        outFile = deriveCovariant(inFilePath, forType, discriminator, node)
+        outFile = action === 'Covariant'
+          ? deriveCovariant(inFilePath, forType, discriminator, node)
+          : deriveBaseFunctor(inFilePath, forType, discriminator, node)
         break
       }
     }
