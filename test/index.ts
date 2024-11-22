@@ -1,6 +1,5 @@
 import * as assert from 'node:assert'
 import { test } from 'node:test'
-import * as util from 'node:util'
 
 import { type TypeLambda } from 'effect/HKT'
 
@@ -79,17 +78,17 @@ const naturalRecursive: Recursive<NaturalTypeLambda, MaybeTypeLambda, never, nev
 }
 
 function fib(number: number): number {
-  return histo(naturalRecursive)<number>(maybeF => {
-    switch (maybeF.type) {
+  return histo(naturalRecursive)<number>(maybe => {
+    switch (maybe.type) {
       case 'Nothing':
         return 1
       case 'Just':
-        switch (maybeF.a[1].type) {
+        switch (maybe.a[1].type) {
           case 'Nothing':
             return 1
           case 'Just': {
-            const fibNMinus1 = maybeF.a[0]
-            const fibNMinus2 = maybeF.a[1].a[0]
+            const fibNMinus1 = maybe.a[0]
+            const fibNMinus2 = maybe.a[1].a[0]
             return fibNMinus1 + fibNMinus2
           }
         }
