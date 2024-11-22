@@ -7,11 +7,12 @@ import { ana, type Corecursive } from '../src/Corecursive'
 import { type List } from '../src/List'
 import { type ListTypeLambda } from '../src/listCovariant'
 import { listFCovariant, type ListFTypeLambda } from '../src/ListF'
+import { maybeCovariant, type MaybeTypeLambda } from '../src/maybeCovariant'
 import { type Peano } from '../src/Peano'
 import { peanoFCovariant, type PeanoFTypeLambda } from '../src/PeanoF'
-import { cata, type Recursive } from '../src/Recursive'
+import { cata, histo, type Recursive } from '../src/Recursive'
 
-export interface PeanoTypeLambda extends TypeLambda {
+interface PeanoTypeLambda extends TypeLambda {
   readonly type: Peano
 }
 
@@ -63,6 +64,40 @@ test('toNumber implemented using cata', () => {
 
 test('fromNumber implemented using ana', () => {
   assert.deepStrictEqual(fromNumber(3), peano)
+})
+
+interface NaturalTypeLambda extends TypeLambda {
+  readonly type: number
+}
+
+const naturalRecursive: Recursive<NaturalTypeLambda, MaybeTypeLambda> = {
+  F: maybeCovariant,
+  project: n => n === 0
+    ? { type: 'Nothing' }
+    : { type: 'Just', a: n - 1 }
+}
+
+function fib(number: number): number {
+  return histo(naturalRecursive)<number>(maybeF => {
+    switch (maybeF.type) {
+      case 'Nothing':
+        return 1
+      case 'Just':
+        switch (maybeF.a[1].type) {
+          case 'Nothing':
+            return 1
+          case 'Just':
+            return maybeF.a[0] + maybeF.a[1].a[0]
+        }
+    }
+  })(number)
+}
+
+test('fib implemented using histo', () => {
+  const ns = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  const actual = ns.map(fib)
+  const expected = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+  assert.deepStrictEqual(actual, expected)
 })
 
 const listRecursive: Recursive<ListTypeLambda, ListFTypeLambda> = {

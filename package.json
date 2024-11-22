@@ -19,6 +19,7 @@
     "build": "rm -rf lib && tsc",
     "generate:ListF": "tsx src/index.ts BaseFunctor --for-type List --discriminator type --in-file src/List.d.ts --out-file src/ListF.ts",
     "generate:listCovariant": "tsx src/index.ts Covariant --for-type List --discriminator type --in-file src/List.d.ts --out-file src/listCovariant.ts",
+    "generate:maybeCovariant": "tsx src/index.ts Covariant --for-type Maybe --discriminator type --in-file src/Maybe.d.ts --out-file src/maybeCovariant.ts",
     "generate:nonEmptyListCovariant": "tsx src/index.ts Covariant --for-type NonEmptyList --in-file src/NonEmptyList.d.ts --out-file src/nonEmptyListCovariant.ts",
     "generate:PeanoF": "tsx src/index.ts BaseFunctor --for-type Peano --discriminator type --in-file src/Peano.d.ts --out-file src/PeanoF.ts",
     "generate:roseTreeCovariant": "tsx src/index.ts Covariant --for-type RoseTree --in-file src/RoseTree.d.ts --out-file src/roseTreeCovariant.ts",
