@@ -16,17 +16,17 @@ export const extract = <F extends TypeLambda, R, O, E, A>(
   return wa[0]
 }
 
-export function duplicate <F extends TypeLambda>(
+export const duplicate = <F extends TypeLambda>(
   F: Covariant<F>
-): <R, O, E, A>(self: Cofree<F, R, O, E, A>) => Cofree<F, R, O, E, Cofree<F, R, O, E, A>> {
+): <R, O, E, A>(self: Cofree<F, R, O, E, A>) => Cofree<F, R, O, E, Cofree<F, R, O, E, A>> => {
   return function duplicate<R, O, E, A>(self: Cofree<F, R, O, E, A>): Cofree<F, R, O, E, Cofree<F, R, O, E, A>> {
     return [self, F.map(unwrap(self), duplicate)]
   }
 }
 
-export function extend <F extends TypeLambda>(
+export const extend = <F extends TypeLambda>(
   F: Covariant<F>
-): <R, O, E, A, B>(self: Cofree<F, R, O, E, A>, f: (wa: Cofree<F, R, O, E, A>) => B) => Cofree<F, R, O, E, B> {
+): <R, O, E, A, B>(self: Cofree<F, R, O, E, A>, f: (wa: Cofree<F, R, O, E, A>) => B) => Cofree<F, R, O, E, B> => {
   return function extend<R, O, E, A, B>(self: Cofree<F, R, O, E, A>, f: (wa: Cofree<F, R, O, E, A>) => B): Cofree<F, R, O, E, B> {
     return [f(self), F.map(unwrap(self), _ => extend(_, f))]
   }
@@ -42,7 +42,7 @@ export const mapComposition = <F extends TypeLambda>(
 
 export const distHisto = <F extends TypeLambda>(
   F: Covariant<F>
-): <R, O, E, A>(f: Kind<F, R, O, E, Cofree<F, R, O, E, A>>) => Cofree<F, R, O, E, Kind<F, R, O, E, A>> => {F
+): <R, O, E, A>(self: Kind<F, R, O, E, Cofree<F, R, O, E, A>>) => Cofree<F, R, O, E, Kind<F, R, O, E, A>> => {F
   return function distHisto<R, O, E, A>(self: Kind<F, R, O, E, Cofree<F, R, O, E, A>>): Cofree<F, R, O, E, Kind<F, R, O, E, A>> {
     return [F.map(self, extract), F.map(self, _ => distHisto(unwrap(_)))]
   }

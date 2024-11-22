@@ -1,5 +1,6 @@
 import * as assert from 'node:assert'
 import { test } from 'node:test'
+import * as util from 'node:util'
 
 import { type TypeLambda } from 'effect/HKT'
 
@@ -16,7 +17,7 @@ interface PeanoTypeLambda extends TypeLambda {
   readonly type: Peano
 }
 
-const peanoRecursive: Recursive<PeanoTypeLambda, PeanoFTypeLambda> = {
+const peanoRecursive: Recursive<PeanoTypeLambda, PeanoFTypeLambda, never, never, never, never, never, never, never> = {
   F: peanoFCovariant,
   project: t => t
 }
@@ -27,7 +28,7 @@ const peanoCorecursive: Corecursive<PeanoTypeLambda, PeanoFTypeLambda> = {
 }
 
 function toNumber (peano: Peano): number {
-  return cata(peanoRecursive)<number, number>(peanoF => {
+  return cata(peanoRecursive)<number>(peanoF => {
     switch (peanoF.type) {
       case 'Z':
         return 0
@@ -70,7 +71,7 @@ interface NaturalTypeLambda extends TypeLambda {
   readonly type: number
 }
 
-const naturalRecursive: Recursive<NaturalTypeLambda, MaybeTypeLambda> = {
+const naturalRecursive: Recursive<NaturalTypeLambda, MaybeTypeLambda, never, never, never, never, never, never, never> = {
   F: maybeCovariant,
   project: n => n === 0
     ? { type: 'Nothing' }
@@ -86,8 +87,11 @@ function fib(number: number): number {
         switch (maybeF.a[1].type) {
           case 'Nothing':
             return 1
-          case 'Just':
-            return maybeF.a[0] + maybeF.a[1].a[0]
+          case 'Just': {
+            const fibNMinus1 = maybeF.a[0]
+            const fibNMinus2 = maybeF.a[1].a[0]
+            return fibNMinus1 + fibNMinus2
+          }
         }
     }
   })(number)
@@ -100,10 +104,10 @@ test('fib implemented using histo', () => {
   assert.deepStrictEqual(actual, expected)
 })
 
-const listRecursive: Recursive<ListTypeLambda, ListFTypeLambda> = {
+const listRecursive: <A>() => Recursive<ListTypeLambda, ListFTypeLambda, never, never, never, A, never, never, A> = () => ({
   F: listFCovariant,
   project: t => t
-}
+})
 
 const listCorecursive: Corecursive<ListTypeLambda, ListFTypeLambda> = {
   F: listFCovariant,
@@ -111,7 +115,7 @@ const listCorecursive: Corecursive<ListTypeLambda, ListFTypeLambda> = {
 }
 
 function toArray<A> (list: List<A>): A[] {
-  return cata(listRecursive)<A, A[]>(listF => {
+  return cata(listRecursive<A>())<A[]>(listF => {
     switch (listF.type) {
       case 'Nil':
         return []
