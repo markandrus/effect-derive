@@ -35,7 +35,7 @@ You can see copies of these files checked-in to the src/examples directory.
 ### Derive a BaseFunctor data type
 
 We can derive a base functor for List by replacing all the recursive positions
-in List with a type variable X:
+in List with a type variable:
 
 ```ts
 export type ListF<A, X>
@@ -55,7 +55,7 @@ npx @markandrus/effect-derive BaseFunctor \
 
 You can see copies of these files checked-in to the src/examples directory.
 
-### Use additional Covariant instances
+### Register additional Covariant instances
 
 The tool only knows about the Covariant instances you tell it about. For
 example, consider a RoseTree:
@@ -67,27 +67,26 @@ export type RoseTree<A> = {
 }
 ```
 
-The `subForest` property is the composition of two functors; however, by
-default, the tool will only know about the Covariant instance for RoseTree. We
-have to tell it that ReadonlyArray has a Covariant instance, too, using the
-`--covariant` flag:
+The `subForest` property is the composition of two functors, ReadonlyArray and
+RoseTree; however, by default, the tool will only know about RoseTree. We have
+to tell it that ReadonlyArray has a Covariant instance, too. We can do this
+using the `--covariant` flag:
 
 ```sh
 npx @markandrus/effect-derive Covariant \
   --for-type RoseTree \
   --in-file src/examples/RoseTree.d.ts \
   --out-file src/examples/roseTreeCovariant.ts \
-  --covariant '@effect/typeclass/data/Array#Covariant#ReadonlyArray<_>'",
+  --covariant '@effect/typeclass/data/Array#Covariant#ReadonlyArray<_>'
 ```
 
-The format of the `--covariant` flag should be 2–3 values, separated by "#",
-representing
+The format of the `--covariant` flag should be 2–3 values:
 
 1. import path (can be relative or absolute)
-2. export name pointing to the Covariant instance (omit to use default export)
-3. the type name, with a hole marked `_` to match on
+2. export name pointing to the Covariant instance (omit for default export)
+3. the type name with a hole marked `_`
 
-You can pass the `--covariant` flag multiple times to regiter additional
+You can pass the `--covariant` flag multiple times to register additional
 Covariant instances.
 
 Developing
