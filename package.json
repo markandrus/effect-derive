@@ -22,8 +22,12 @@
     "generate:nonEmptyListCovariant": "tsx src/index.ts Covariant --for-type NonEmptyList --in-file src/examples/NonEmptyList.ts --out-file src/examples/nonEmptyListCovariant.ts --covariant './src/examples/maybeCovariant#maybeCovariant#Maybe<_>'",
     "generate:nonEmptyListFoldable": "tsx src/index.ts Foldable --for-type NonEmptyList --in-file src/examples/NonEmptyList.ts --out-file src/examples/nonEmptyListFoldable.ts --foldable './src/examples/maybeFoldable#maybeFoldable#Maybe<_>'",
     "generate:PeanoF": "tsx src/index.ts BaseFunctor --for-type Peano --discriminator type --in-file src/examples/Peano.ts --out-file src/examples/PeanoF.ts",
+    "generate:productCovariant": "tsx src/index.ts Covariant --for-type Product --in-file src/examples/Product.ts --out-file src/examples/productCovariant.ts",
+    "generate:productFoldable": "tsx src/index.ts Foldable --for-type Product --in-file src/examples/Product.ts --out-file src/examples/productFoldable.ts",
     "generate:roseTreeCovariant": "tsx src/index.ts Covariant --for-type RoseTree --in-file src/examples/RoseTree.ts --out-file src/examples/roseTreeCovariant.ts --covariant '@effect/typeclass/data/Array#Covariant#ReadonlyArray<_>'",
     "generate:roseTreeFoldable": "tsx src/index.ts Foldable --for-type RoseTree --in-file src/examples/RoseTree.ts --out-file src/examples/roseTreeFoldable.ts --foldable '@effect/typeclass/data/Array#Foldable#ReadonlyArray<_>'",
+    "generate:sumCovariant": "tsx src/index.ts Covariant --for-type Sum --discriminator type --in-file src/examples/Sum.ts --out-file src/examples/sumCovariant.ts",
+    "generate:sumFoldable": "tsx src/index.ts Foldable --for-type Sum --discriminator type --in-file src/examples/Sum.ts --out-file src/examples/sumFoldable.ts",
     "prepublish": "rm -rf lib && tsc",
     "test": "tsx test/index.ts"
   },
