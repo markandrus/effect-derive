@@ -5,14 +5,14 @@ This project provides a proof-of-concept command-line tool for deriving types
 and typeclass instances to be used with [Effect][effect]. Currently, it can
 derive [Covariant][covariant] (AKA [Functor][functor]) instances and
 base functors (a la [recursion-schemes][recursion_schemes]) for simple algebraic
-data types (ADTs).
+data types (ADTs). The tool is inspired by [GHC's `DeriveFunctor`][ghc].
 
 Usage
 -----
 
-### Derive `Covariant`
+### Derive a Covariant instance
 
-Assume we have the input file src/List.d.ts:
+Assume we have the input file src/examples/List.d.ts:
 
 ```ts
 export type List<A>
@@ -20,34 +20,22 @@ export type List<A>
   | { type: 'Cons', head: A, tail: List<A> }
 ```
 
-Then we can generate the output file src/listCovariant.ts as follows:
+Then we can generate the output file src/examples/listCovariant.ts as follows:
 
 ```sh
 npx @markandrus/effect-derive Covariant \
   --for-type List \
   --discriminator type \
-  --in-file src/List.d.ts \
-  --out-file src/listCovariant.ts
+  --in-file src/examples/List.d.ts \
+  --out-file src/examples/listCovariant.ts
 ```
 
-You can see a copy of this file checked into the repository.
+You can see copies of these files checked-in to the src/examples directory.
 
-There are also examples for NonEmptyList and RoseTree:
+### Derive a BaseFunctor data type
 
-```ts
-// src/NonEmptyList.d.ts
-export type NonEmptyList<A>
-  = { head: A, tail: A[] }
-
-// src/RoseTree.d.ts
-export type RoseTree<A>
-  = { rootLabel: A, subForest: Array<RoseTree<A>> }
-```
-
-### Derive `BaseFunctor`
-
-Assume we have the same input file src/List.d.ts as above, then the base functor
-for List would be ListF:
+We can derive a base functor for List by replacing all the recursive positions
+in List with a type variable X:
 
 ```ts
 export type ListF<A, X>
@@ -55,35 +43,52 @@ export type ListF<A, X>
   | { type: 'Cons', head: A, tail: X }
 ```
 
-We can generate ListF and its Covariant instance as follows:
+We can generate this base functor as follows:
 
 ```sh
 npx @markandrus/effect-derive BaseFunctor \
   --for-type List \
   --discriminator type \
-  --in-file src/List.d.ts \
-  --out-file src/ListF.ts
+  --in-file src/examples/List.d.ts \
+  --out-file src/examples/ListF.ts
 ```
 
-You can see a copy of this file checked into the repository.
+You can see copies of these files checked-in to the src/examples directory.
 
-There is also an example for Peano:
+### Use additional Covariant instances
+
+The tool only knows about the Covariant instances you tell it about. For
+example, consider a RoseTree:
 
 ```ts
-// src/Peano.d.ts
-export type Peano
-  = { type: 'Z' }
-  | { type: 'S', succ: Peano }
+export type RoseTree<A> = {
+  rootLabel: A,
+  subForest: ReadonlyArray<RoseTree<A>>
+}
 ```
 
-Limitations
------------
+The `subForest` property is the composition of two functors; however, by
+default, the tool will only know about the Covariant instance for RoseTree. We
+have to tell it that ReadonlyArray has a Covariant instance, too, using the
+`--covariant` flag:
 
-This project is not as powerful as [GHC's `DeriveFunctor`][ghc]. It only
-supports derivations for ADTs modeled as discriminated unions, and it only
-knows about its own Functor instance, plus a few built-in ones (namely, Array).
-In order to solve this, we need a way to register known Functor instances that
-the code generator can use. Base functor derivation is even more limited.
+```sh
+npx @markandrus/effect-derive Covariant \
+  --for-type RoseTree \
+  --in-file src/examples/RoseTree.d.ts \
+  --out-file src/examples/roseTreeCovariant.ts \
+  --covariant '@effect/typeclass/data/Array#Covariant#ReadonlyArray<_>'",
+```
+
+The format of the `--covariant` flag should be 2–3 values, separated by "#",
+representing
+
+1. import path (can be relative or absolute)
+2. export name pointing to the Covariant instance (omit to use default export)
+3. the type name, with a hole marked `_` to match on
+
+You can pass the `--covariant` flag multiple times to regiter additional
+Covariant instances.
 
 Developing
 ----------

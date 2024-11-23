@@ -1,2 +1,4 @@
+import { Maybe } from './Maybe'
+
 export type NonEmptyList<A>
-  = { head: A, tail: A[] }
+  = { type: 'NonEmptyList', head: A, tail: Maybe<NonEmptyList<A>> }

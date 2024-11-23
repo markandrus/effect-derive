@@ -1,4 +1,5 @@
 import * as covariant from "@effect/typeclass/Covariant"
+import { Covariant as ReadonlyArrayCovariant } from "@effect/typeclass/data/Array"
 import { dual } from "effect/Function"
 import { type TypeLambda } from "effect/HKT"
 
@@ -14,7 +15,7 @@ export const map: {
 } = dual(
   2,
   <A, B>(self: RoseTree<A>, f: (a: A) => B): RoseTree<B> => {
-    return { ...self, "rootLabel": f(self["rootLabel"]), "subForest": self["subForest"].map(map(f)) }
+    return { ...self, "rootLabel": f(self["rootLabel"]), "subForest": ReadonlyArrayCovariant.map(self["subForest"], _ => map(_, f)) }
   }
 )
 

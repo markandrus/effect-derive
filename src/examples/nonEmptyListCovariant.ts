@@ -3,6 +3,7 @@ import { dual } from "effect/Function"
 import { type TypeLambda } from "effect/HKT"
 
 import { type NonEmptyList } from "./NonEmptyList"
+import { maybeCovariant as MaybeCovariant } from "./maybeCovariant"
 
 export interface NonEmptyListTypeLambda extends TypeLambda {
   readonly type: NonEmptyList<this["Target"]>
@@ -14,7 +15,7 @@ export const map: {
 } = dual(
   2,
   <A, B>(self: NonEmptyList<A>, f: (a: A) => B): NonEmptyList<B> => {
-    return { ...self, "head": f(self["head"]), "tail": self["tail"].map(f) }
+    return { ...self, "head": f(self["head"]), "tail": MaybeCovariant.map(self["tail"], _ => map(_, f)) }
   }
 )
 

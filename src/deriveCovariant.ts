@@ -1,10 +1,76 @@
-import { Node, type TypeAliasDeclaration, type TypeNode } from 'ts-morph'
+import { Node, SyntaxKind, type TypeAliasDeclaration, type TypeNode } from 'ts-morph'
 
 import { OutFile } from './OutFile'
 
 const tyParamPlaceholders = ['C', 'D']
 
-export function deriveCovariant (inFilePath: string | undefined, forType: string, discriminator: string | undefined, node: TypeAliasDeclaration): OutFile {
+export type CovariantRegistry = Map<string, [holeIndex: number, mapFunction: string]>
+
+type CovariantMatcher = (holeName: string, tyNode: TypeNode) => string[] | undefined  
+
+function createCovariantMatcher (registry: CovariantRegistry): CovariantMatcher {
+  return function covariantMatcher (holeName, tyNode): string[] | undefined {
+    switch (tyNode.getKind()) {
+      case SyntaxKind.TypeReference: {
+        const tyRefNode = tyNode.asKindOrThrow(SyntaxKind.TypeReference)
+        const tyRefName = tyRefNode.getTypeName().print()
+        if (tyRefName === holeName) return []
+
+        const holeIndexAndMapFunction = registry.get(tyRefName)
+        if (holeIndexAndMapFunction == null) return undefined
+        const [holeIndex, mapFunction] = holeIndexAndMapFunction
+
+        const tyArg = tyRefNode.getTypeArguments()[holeIndex]
+        if (tyArg == null) return undefined
+
+        const tail = covariantMatcher(holeName, tyArg)
+        if (tail == null) return undefined
+
+        return [mapFunction].concat(tail)
+      }
+
+      case SyntaxKind.ArrayType: {
+        const tyArrayNode = tyNode.asKindOrThrow(SyntaxKind.ArrayType)
+
+        const holeIndexAndMapFunction = registry.get('Array')
+        if (holeIndexAndMapFunction == null) return undefined
+        const mapFunction = holeIndexAndMapFunction[1]
+
+        const elemTyNode = tyArrayNode.getElementTypeNode()
+        const tail = covariantMatcher(holeName, elemTyNode)
+        if (tail == null) return undefined
+        return [mapFunction].concat(tail)
+      }
+
+      case SyntaxKind.TypeOperator: {
+        const tyOpNode = tyNode.asKindOrThrow(SyntaxKind.TypeOperator)
+        if (tyOpNode.getOperator() !== SyntaxKind.ReadonlyKeyword) return undefined
+
+        const tyNode2 = tyOpNode.getTypeNode()
+        if (Node.isArrayTypeNode(tyNode2)) {
+          const holeIndexAndMapFunction = registry.get('ReadonlyArray')
+          if (holeIndexAndMapFunction == null) return undefined
+          const mapFunction = holeIndexAndMapFunction[1]
+
+          const elemTyNode = tyNode2.getElementTypeNode()
+          const tail = covariantMatcher(holeName, elemTyNode)
+          if (tail == null) return undefined
+          return [mapFunction].concat(tail)
+        }
+
+        return undefined
+      }
+
+      default:
+        return undefined
+    }
+  }
+}
+
+export function deriveCovariant (inFilePath: string | undefined, forType: string, discriminator: string | undefined, registry: CovariantRegistry, node: TypeAliasDeclaration): OutFile {
+  registry = new Map(registry)
+  registry.set(forType, [0, 'map'])
+  const covariantMatcher = createCovariantMatcher(registry)
   const outFile = new OutFile()
 
   const tyParams = node.getTypeParameters()
@@ -39,7 +105,7 @@ export function deriveCovariant (inFilePath: string | undefined, forType: string
   } else if (!Node.isTypeLiteral(tyNode)) {
     throw new Error(`Type alias "${forType}" must be a union or type literal`)
   }
-  const switchStmt = handleTypeNodes(forType, discriminator, tyParam.getName(), tyNodes)
+  const switchStmt = handleTypeNodes(covariantMatcher, forType, discriminator, tyParam.getName(), tyNodes)
 
   outFile
     .addPackageAsteriskImport('@effect/typeclass/Covariant', 'covariant')
@@ -72,11 +138,11 @@ export const ${forType[0].toLowerCase() + forType.slice(1)}Covariant: covariant.
 `)
 }
 
-function handleTypeNodes (forType: string, discriminator: string | undefined, tyParam: string, tyNodes: TypeNode[]): string {
+function handleTypeNodes (covariantMatcher: CovariantMatcher, forType: string, discriminator: string | undefined, tyParam: string, tyNodes: TypeNode[]): string {
   let cases = ''
 
   for (const tyNode of tyNodes) {
-    cases += handleTypeNode(forType, discriminator, tyParam, tyNode)
+    cases += handleTypeNode(covariantMatcher, forType, discriminator, tyParam, tyNode)
   }
 
   if (discriminator == null) {
@@ -90,7 +156,7 @@ ${cases}      default:
     }`
 }
 
-function handleTypeNode (forType: string, discriminator: string | undefined, tyParam: string, tyNode: TypeNode): string {
+function handleTypeNode (covariantMatcher: CovariantMatcher, forType: string, discriminator: string | undefined, tyParam: string, tyNode: TypeNode): string {
   if (!Node.isTypeLiteral(tyNode)) {
     throw new Error(`Every member of the union type "${forType}" must be a TypeLiteral`)
   }
@@ -114,53 +180,29 @@ function handleTypeNode (forType: string, discriminator: string | undefined, tyP
       continue
     }
 
-    if (Node.isTypeReference(memberValue)) {
-      const tyName = memberValue.getTypeName().getText()
-      const tyArgs = memberValue.getTypeArguments()
-      if (tyName === tyParam && tyArgs.length === 0) {
-        updates += `, ${JSON.stringify(memberName)}: f(self[${JSON.stringify(memberName)}])`
-      } else if (tyName === forType) {
-        const tyArg = tyArgs.at(-1)
-        if (Node.isTypeReference(tyArg)) {
-          const tyArgName = tyArg.getTypeName().getText()
-          if (tyArgName === tyParam && tyArg.getTypeArguments().length === 0) {
-            updates += `, ${JSON.stringify(memberName)}: map(self[${JSON.stringify(memberName)}], f)`
-          }
-        }
-      } else if (tyName === 'Array' && tyArgs.length === 1) {
-        const tyArg = tyArgs[0]
-        if (Node.isTypeReference(tyArg)) {
-          const tyArgName = tyArg.getTypeName().getText()
-          if (tyArgName === tyParam && tyArg.getTypeArguments().length === 0) {
-            updates += `, ${JSON.stringify(memberName)}: self[${JSON.stringify(memberName)}].map(f)`
-          } else if (tyArgName === forType) {
-            const tyArg2 = tyArg.getTypeArguments().at(-1)
-            if (Node.isTypeReference(tyArg2)) {
-              const tyArg2Name = tyArg2.getTypeName().getText()
-              if (tyArg2Name === tyParam && tyArg2.getTypeArguments().length === 0) {
-                updates += `, ${JSON.stringify(memberName)}: self[${JSON.stringify(memberName)}].map(map(f))`
-              }
-            }
-          }
-        }
-      }
-    } else if (Node.isArrayTypeNode(memberValue)) {
-      const elemTyNode = memberValue.getElementTypeNode()
-      if (Node.isTypeReference(elemTyNode)) {
-        const tyName = elemTyNode.getTypeName().getText()
-        if (tyName === tyParam && elemTyNode.getTypeArguments().length === 0) {
-          updates += `, ${JSON.stringify(memberName)}: self[${JSON.stringify(memberName)}].map(f)`
-        } else if (tyName === forType) {
-          const tyArg = elemTyNode.getTypeArguments().at(-1)
-          if (Node.isTypeReference(tyArg)) {
-            const tyArgName = tyArg.getTypeName().getText()
-            if (tyArgName === tyParam && tyArg.getTypeArguments().length === 0) {
-              updates += `, ${JSON.stringify(memberName)}: self[${JSON.stringify(memberName)}].map(map(f))`
-            }
-          }
-        }
+    const mapFunctions = covariantMatcher(tyParam, memberValue)
+    if (mapFunctions == null) continue
+
+    updates += `, ${JSON.stringify(memberName)}: `
+
+    if (mapFunctions.length === 0) {
+      updates += `f(self[${JSON.stringify(memberName)}])`
+      continue
+    }
+
+    let i = 0
+    let suffix = ''
+    for (const mapFunction of mapFunctions) {
+      if (i++ === 0) {
+        updates += `${mapFunction}(self[${JSON.stringify(memberName)}], `
+        suffix += 'f)'
+      } else {
+        updates += `_ => ${mapFunction}(_, `
+        suffix += ')'
       }
     }
+
+    updates += suffix
   }
 
   if (discriminator != null && discriminatorValue == null) {

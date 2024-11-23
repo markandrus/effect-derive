@@ -1,9 +1,9 @@
 import { Node, type TypeAliasDeclaration, type TypeNode } from 'ts-morph'
 
-import { deriveCovariant } from './deriveCovariant'
+import { CovariantRegistry, deriveCovariant } from './deriveCovariant'
 import { OutFile } from './OutFile'
 
-export function deriveBaseFunctor (_inFilePath: string, forType: string, discriminator: string | undefined, node: TypeAliasDeclaration): OutFile {
+export function deriveBaseFunctor (_inFilePath: string, forType: string, discriminator: string | undefined, registry: CovariantRegistry, node: TypeAliasDeclaration): OutFile {
   const outFile = new OutFile()
 
   const tyParams = node.getTypeParameters()
@@ -37,7 +37,7 @@ export function deriveBaseFunctor (_inFilePath: string, forType: string, discrim
 
   outFile.addDeclarations(node.print() + '\n\n')
 
-  return outFile.merge(deriveCovariant(undefined, forType + 'F', discriminator, node))
+  return outFile.merge(deriveCovariant(undefined, forType + 'F', discriminator, registry, node))
 }
 
 function handleTypeNodes (forType: string, tyParam: string, tyNodes: TypeNode[]): void {
