@@ -2,86 +2,27 @@ import { Node, SyntaxKind, type TypeAliasDeclaration, type TypeNode } from 'ts-m
 
 import { OutFile } from './OutFile'
 import { type Registry } from './Registry'
+import { createRegistryMatcher, type RegistryMatcher } from './RegistryMatcher'
 
 const tyParamPlaceholders = ['C', 'D']
 
-type CovariantMatcher = (holeName: string, tyNode: TypeNode) => string[] | undefined  
-
-function createCovariantMatcher (registry: Registry): CovariantMatcher {
-  return function covariantMatcher (holeName, tyNode): string[] | undefined {
-    switch (tyNode.getKind()) {
-      case SyntaxKind.TypeReference: {
-        const tyRefNode = tyNode.asKindOrThrow(SyntaxKind.TypeReference)
-        const tyRefName = tyRefNode.getTypeName().print()
-        if (tyRefName === holeName) return []
-
-        const holeIndexAndMapFunction = registry.get(tyRefName)
-        if (holeIndexAndMapFunction == null) return undefined
-        const [holeIndex, mapFunction] = holeIndexAndMapFunction
-
-        const tyArg = tyRefNode.getTypeArguments()[holeIndex]
-        if (tyArg == null) return undefined
-
-        const tail = covariantMatcher(holeName, tyArg)
-        if (tail == null) return undefined
-
-        return [mapFunction].concat(tail)
-      }
-
-      case SyntaxKind.ArrayType: {
-        const tyArrayNode = tyNode.asKindOrThrow(SyntaxKind.ArrayType)
-
-        const holeIndexAndMapFunction = registry.get('Array')
-        if (holeIndexAndMapFunction == null) return undefined
-        const mapFunction = holeIndexAndMapFunction[1]
-
-        const elemTyNode = tyArrayNode.getElementTypeNode()
-        const tail = covariantMatcher(holeName, elemTyNode)
-        if (tail == null) return undefined
-        return [mapFunction].concat(tail)
-      }
-
-      case SyntaxKind.TypeOperator: {
-        const tyOpNode = tyNode.asKindOrThrow(SyntaxKind.TypeOperator)
-        if (tyOpNode.getOperator() !== SyntaxKind.ReadonlyKeyword) return undefined
-
-        const tyNode2 = tyOpNode.getTypeNode()
-        if (Node.isArrayTypeNode(tyNode2)) {
-          const holeIndexAndMapFunction = registry.get('ReadonlyArray')
-          if (holeIndexAndMapFunction == null) return undefined
-          const mapFunction = holeIndexAndMapFunction[1]
-
-          const elemTyNode = tyNode2.getElementTypeNode()
-          const tail = covariantMatcher(holeName, elemTyNode)
-          if (tail == null) return undefined
-          return [mapFunction].concat(tail)
-        }
-
-        return undefined
-      }
-
-      default:
-        return undefined
-    }
-  }
-}
-
 export function deriveCovariant (inFilePath: string | undefined, forType: string, discriminator: string | undefined, registry: Registry, node: TypeAliasDeclaration): OutFile {
-  registry = new Map(registry)
-  registry.set(forType, [0, 'map'])
-  const covariantMatcher = createCovariantMatcher(registry)
   const outFile = new OutFile()
 
   const tyParams = node.getTypeParameters()
   if (tyParams.length < 1) {
-    throw new Error('At least one type parameter is required to derive functor')
+    throw new Error('At least one type parameter is required to derive Covariant')
   } else if (tyParams.length > 3) {
-    throw new Error('At most 3 type parameters are supported when deriving functor, due to limitations in effect\'s HKT encoding')
+    throw new Error('At most 3 type parameters are supported when deriving Covariant, due to limitations in effect\'s HKT encoding')
   }
 
-  // In Haskell-style, we take the rightmost type parameter to be the "hole"
-  // that the Functor instance will use.
-  const tyParam = tyParams[tyParams.length - 1]
+  // In Haskell-style, we take the rightmost type parameter to be the "hole".
+  const holeIndex = tyParams.length - 1
+  const tyParam = tyParams[holeIndex]
+
+  registry = new Map(registry)
+  registry.set(forType, [holeIndex, 'map'])
+  const matcher = createRegistryMatcher(registry)
 
   let typeLambdaParams = ''
   let freeTyParams = ''
@@ -104,7 +45,7 @@ export function deriveCovariant (inFilePath: string | undefined, forType: string
   } else if (!Node.isTypeLiteral(tyNode)) {
     throw new Error(`Type alias "${forType}" must be a union or type literal`)
   }
-  const switchStmt = handleTypeNodes(covariantMatcher, forType, discriminator, tyParam.getName(), tyNodes)
+  const switchStmt = handleTypeNodes(matcher, forType, discriminator, tyParam.getName(), tyNodes)
 
   outFile
     .addPackageAsteriskImport('@effect/typeclass/Covariant', 'covariant')
@@ -137,11 +78,11 @@ export const ${forType[0].toLowerCase() + forType.slice(1)}Covariant: covariant.
 `)
 }
 
-function handleTypeNodes (covariantMatcher: CovariantMatcher, forType: string, discriminator: string | undefined, tyParam: string, tyNodes: TypeNode[]): string {
+function handleTypeNodes (matcher: RegistryMatcher, forType: string, discriminator: string | undefined, tyParam: string, tyNodes: TypeNode[]): string {
   let cases = ''
 
   for (const tyNode of tyNodes) {
-    cases += handleTypeNode(covariantMatcher, forType, discriminator, tyParam, tyNode)
+    cases += handleTypeNode(matcher, forType, discriminator, tyParam, tyNode)
   }
 
   if (discriminator == null) {
@@ -155,7 +96,7 @@ ${cases}      default:
     }`
 }
 
-function handleTypeNode (covariantMatcher: CovariantMatcher, forType: string, discriminator: string | undefined, tyParam: string, tyNode: TypeNode): string {
+function handleTypeNode (matcher: RegistryMatcher, forType: string, discriminator: string | undefined, tyParam: string, tyNode: TypeNode): string {
   if (!Node.isTypeLiteral(tyNode)) {
     throw new Error(`Every member of the union type "${forType}" must be a TypeLiteral`)
   }
@@ -179,7 +120,7 @@ function handleTypeNode (covariantMatcher: CovariantMatcher, forType: string, di
       continue
     }
 
-    const mapFunctions = covariantMatcher(tyParam, memberValue)
+    const mapFunctions = matcher(tyParam, memberValue)
     if (mapFunctions == null) continue
 
     updates += `, ${JSON.stringify(memberName)}: `
