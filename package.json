@@ -14,6 +14,9 @@
   },
   "scripts": {
     "build": "rm -rf lib && tsc",
+    "generate:complexCovariant": "tsx src/index.ts Covariant --for-type Complex --discriminator type --in-file src/examples/Complex.ts --out-file src/examples/complexCovariant.ts --covariant './src/examples/sumCovariant#sumCovariant#Sum<A, _>' --covariant './src/examples/productCovariant#productCovariant#Product<A, _>' --covariant '@effect/typeclass/data/Array#Covariant#ReadonlyArray<_>'",
+    "generate:complexFoldable": "tsx src/index.ts Foldable --for-type Complex --discriminator type --in-file src/examples/Complex.ts --out-file src/examples/complexFoldable.ts --foldable './src/examples/sumFoldable#sumFoldable#Sum<A, _>' --foldable './src/examples/productFoldable#productFoldable#Product<A, _>' --foldable '@effect/typeclass/data/Array#Foldable#ReadonlyArray<_>'",
+    "generate:complexTraversable": "tsx src/index.ts Traversable --for-type Complex --discriminator type --in-file src/examples/Complex.ts --out-file src/examples/complexTraversable.ts --traversable './src/examples/sumTraversable#sumTraversable#Sum<A, _>' --traversable './src/examples/productTraversable#productTraversable#Product<A, _>' --traversable '@effect/typeclass/data/Array#Traversable#ReadonlyArray<_>'",
     "generate:ListF": "tsx src/index.ts BaseFunctor --for-type List --discriminator type --in-file src/examples/List.ts --out-file src/examples/ListF.ts",
     "generate:listCovariant": "tsx src/index.ts Covariant --for-type List --discriminator type --in-file src/examples/List.ts --out-file src/examples/listCovariant.ts",
     "generate:listFoldable": "tsx src/index.ts Foldable --for-type List --discriminator type --in-file src/examples/List.ts --out-file src/examples/listFoldable.ts",
@@ -26,11 +29,13 @@
     "generate:PeanoF": "tsx src/index.ts BaseFunctor --for-type Peano --discriminator type --in-file src/examples/Peano.ts --out-file src/examples/PeanoF.ts",
     "generate:productCovariant": "tsx src/index.ts Covariant --for-type Product --in-file src/examples/Product.ts --out-file src/examples/productCovariant.ts",
     "generate:productFoldable": "tsx src/index.ts Foldable --for-type Product --in-file src/examples/Product.ts --out-file src/examples/productFoldable.ts",
+    "generate:productTraversable": "tsx src/index.ts Traversable --for-type Product --in-file src/examples/Product.ts --out-file src/examples/productTraversable.ts",
     "generate:roseTreeCovariant": "tsx src/index.ts Covariant --for-type RoseTree --in-file src/examples/RoseTree.ts --out-file src/examples/roseTreeCovariant.ts --covariant '@effect/typeclass/data/Array#Covariant#ReadonlyArray<_>'",
     "generate:roseTreeFoldable": "tsx src/index.ts Foldable --for-type RoseTree --in-file src/examples/RoseTree.ts --out-file src/examples/roseTreeFoldable.ts --foldable '@effect/typeclass/data/Array#Foldable#ReadonlyArray<_>'",
     "generate:roseTreeTraversable": "tsx src/index.ts Traversable --for-type RoseTree --in-file src/examples/RoseTree.ts --out-file src/examples/roseTreeTraversable.ts --traversable '@effect/typeclass/data/Array#Traversable#ReadonlyArray<_>'",
     "generate:sumCovariant": "tsx src/index.ts Covariant --for-type Sum --discriminator type --in-file src/examples/Sum.ts --out-file src/examples/sumCovariant.ts",
     "generate:sumFoldable": "tsx src/index.ts Foldable --for-type Sum --discriminator type --in-file src/examples/Sum.ts --out-file src/examples/sumFoldable.ts",
+    "generate:sumTraversable": "tsx src/index.ts Traversable --for-type Sum --discriminator type --in-file src/examples/Sum.ts --out-file src/examples/sumTraversable.ts",
     "prepublish": "rm -rf lib && tsc",
     "test": "tsx test/index.ts"
   },

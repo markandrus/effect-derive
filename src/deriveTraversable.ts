@@ -65,10 +65,10 @@ export interface ${forType}TypeLambda extends TypeLambda {
 export const traverse = <F extends TypeLambda>(
   F: applicative.Applicative<F>
 ): {
-  <A, R, O, E, B>(
+  <${freeTyParamsPrefix}A, R, O, E, B>(
     f: (a: A) => Kind<F, R, O, E, B>
   ): (self: ${forType}<${freeTyParamsPrefix}A>) => Kind<F, R, O, E, ${forType}<${freeTyParamsPrefix}B>>
-  <A, R, O, E, B>(
+  <${freeTyParamsPrefix}A, R, O, E, B>(
     self: ${forType}<${freeTyParamsPrefix}A>,
     f: (a: A) => Kind<F, R, O, E, B>
   ): Kind<F, R, O, E, ${forType}<${freeTyParamsPrefix}B>>
@@ -76,7 +76,7 @@ export const traverse = <F extends TypeLambda>(
   const ap = makeAp(F)
   return dual(
     2,
-    <A, R, O, E, B>(
+    <${freeTyParamsPrefix}A, R, O, E, B>(
       self: ${forType}<${freeTyParamsPrefix}A>,
       f: (a: A) => Kind<F, R, O, E, B>
     ): Kind<F, R, O, E, ${forType}<${freeTyParamsPrefix}B>> => {
