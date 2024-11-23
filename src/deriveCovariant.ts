@@ -1,14 +1,13 @@
 import { Node, SyntaxKind, type TypeAliasDeclaration, type TypeNode } from 'ts-morph'
 
 import { OutFile } from './OutFile'
+import { type Registry } from './Registry'
 
 const tyParamPlaceholders = ['C', 'D']
 
-export type CovariantRegistry = Map<string, [holeIndex: number, mapFunction: string]>
-
 type CovariantMatcher = (holeName: string, tyNode: TypeNode) => string[] | undefined  
 
-function createCovariantMatcher (registry: CovariantRegistry): CovariantMatcher {
+function createCovariantMatcher (registry: Registry): CovariantMatcher {
   return function covariantMatcher (holeName, tyNode): string[] | undefined {
     switch (tyNode.getKind()) {
       case SyntaxKind.TypeReference: {
@@ -67,7 +66,7 @@ function createCovariantMatcher (registry: CovariantRegistry): CovariantMatcher 
   }
 }
 
-export function deriveCovariant (inFilePath: string | undefined, forType: string, discriminator: string | undefined, registry: CovariantRegistry, node: TypeAliasDeclaration): OutFile {
+export function deriveCovariant (inFilePath: string | undefined, forType: string, discriminator: string | undefined, registry: Registry, node: TypeAliasDeclaration): OutFile {
   registry = new Map(registry)
   registry.set(forType, [0, 'map'])
   const covariantMatcher = createCovariantMatcher(registry)

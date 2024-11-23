@@ -1,9 +1,10 @@
 import { Node, type TypeAliasDeclaration, type TypeNode } from 'ts-morph'
 
-import { CovariantRegistry, deriveCovariant } from './deriveCovariant'
+import { deriveCovariant } from './deriveCovariant'
 import { OutFile } from './OutFile'
+import { type Registry } from './Registry'
 
-export function deriveBaseFunctor (_inFilePath: string, forType: string, discriminator: string | undefined, registry: CovariantRegistry, node: TypeAliasDeclaration): OutFile {
+export function deriveBaseFunctor (_inFilePath: string, forType: string, discriminator: string | undefined, registry: Registry, node: TypeAliasDeclaration): OutFile {
   const outFile = new OutFile()
 
   const tyParams = node.getTypeParameters()

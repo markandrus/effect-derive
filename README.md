@@ -7,6 +7,13 @@ derive [Covariant][covariant] (AKA [Functor][functor]) instances and
 base functors (a la [recursion-schemes][recursion_schemes]) for simple algebraic
 data types (ADTs). The tool is inspired by [GHC's `DeriveFunctor`][ghc].
 
+Working on
+
+- [ ] Recursive
+- [ ] Corecursive
+- [ ] Foldable
+- [ ] Traversable
+
 Usage
 -----
 
