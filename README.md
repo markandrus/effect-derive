@@ -11,7 +11,7 @@ Working on
 
 - [ ] Recursive
 - [ ] Corecursive
-- [ ] Foldable
+- [x] Foldable
 - [ ] Traversable
 
 Usage
