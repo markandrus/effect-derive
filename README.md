@@ -19,7 +19,7 @@ Usage
 
 ### Derive a Covariant instance
 
-Assume we have the input file src/examples/List.d.ts:
+Assume we have the input file src/examples/List.ts:
 
 ```ts
 export type List<A>
@@ -33,7 +33,7 @@ Then we can generate the output file src/examples/listCovariant.ts as follows:
 npx @markandrus/effect-derive Covariant \
   --for-type List \
   --discriminator type \
-  --in-file src/examples/List.d.ts \
+  --in-file src/examples/List.ts \
   --out-file src/examples/listCovariant.ts
 ```
 
@@ -56,7 +56,7 @@ We can generate this base functor as follows:
 npx @markandrus/effect-derive BaseFunctor \
   --for-type List \
   --discriminator type \
-  --in-file src/examples/List.d.ts \
+  --in-file src/examples/List.ts \
   --out-file src/examples/ListF.ts
 ```
 
@@ -82,7 +82,7 @@ using the `--covariant` flag:
 ```sh
 npx @markandrus/effect-derive Covariant \
   --for-type RoseTree \
-  --in-file src/examples/RoseTree.d.ts \
+  --in-file src/examples/RoseTree.ts \
   --out-file src/examples/roseTreeCovariant.ts \
   --covariant '@effect/typeclass/data/Array#Covariant#ReadonlyArray<_>'
 ```
