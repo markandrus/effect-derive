@@ -2,9 +2,9 @@ import * as assert from 'node:assert'
 import { suite, test } from 'node:test'
 
 import { ana, type Corecursive } from '../src/Corecursive'
-import { type List } from '../src/List'
-import { type ListTypeLambda } from '../src/listCovariant'
-import { listFCovariant, type ListFTypeLambda } from '../src/ListF'
+import { type List } from '../src/examples/List'
+import { type ListTypeLambda } from '../src/examples/listCovariant'
+import { listFCovariant, type ListFTypeLambda } from '../src/examples/ListF'
 import { cata, type Recursive } from '../src/Recursive'
 
 const listRecursive: <A>() => Recursive<ListTypeLambda, ListFTypeLambda, never, never, never, A, never, never, A> = () => ({

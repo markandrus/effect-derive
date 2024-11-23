@@ -4,8 +4,8 @@ import { suite, test } from 'node:test'
 import { type TypeLambda } from 'effect/HKT'
 
 import { ana, type Corecursive } from '../src/Corecursive'
-import { type Peano } from '../src/Peano'
-import { type PeanoFTypeLambda, peanoFCovariant } from '../src/PeanoF'
+import { type Peano } from '../src/examples/Peano'
+import { type PeanoFTypeLambda, peanoFCovariant } from '../src/examples/PeanoF'
 import { cata, type Recursive } from '../src/Recursive'
 
 interface PeanoTypeLambda extends TypeLambda {
