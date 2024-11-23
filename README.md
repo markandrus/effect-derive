@@ -12,7 +12,7 @@ Working on
 - [ ] Recursive
 - [ ] Corecursive
 - [x] Foldable
-- [ ] Traversable
+- [x] Traversable
 
 Usage
 -----
