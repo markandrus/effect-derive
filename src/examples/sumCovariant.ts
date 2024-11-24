@@ -31,3 +31,4 @@ export const sumCovariant: covariant.Covariant<SumTypeLambda> = {
   imap,
   map
 }
+

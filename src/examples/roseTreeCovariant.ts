@@ -25,3 +25,4 @@ export const roseTreeCovariant: covariant.Covariant<RoseTreeTypeLambda> = {
   imap,
   map
 }
+

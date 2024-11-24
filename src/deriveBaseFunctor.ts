@@ -1,10 +1,13 @@
 import { Node, type TypeAliasDeclaration, type TypeNode } from 'ts-morph'
 
 import { deriveCovariant } from './deriveCovariant'
+import { deriveFoldable } from './deriveFoldable'
+import { deriveTraversable } from './deriveTraversable'
+import { deriveTypeLambda } from './deriveTypeLambda'
 import { OutFile } from './OutFile'
-import { type Registry } from './Registry'
+import { type Registries } from './Registry'
 
-export function deriveBaseFunctor (_inFilePath: string, forType: string, discriminator: string | undefined, registry: Registry, node: TypeAliasDeclaration): OutFile {
+export function deriveBaseFunctor (_inFilePath: string, forType: string, discriminator: string | undefined, registries: Registries, node: TypeAliasDeclaration): OutFile {
   const outFile = new OutFile()
 
   const tyParams = node.getTypeParameters()
@@ -38,7 +41,11 @@ export function deriveBaseFunctor (_inFilePath: string, forType: string, discrim
 
   outFile.addDeclarations(node.print() + '\n\n')
 
-  return outFile.merge(deriveCovariant(undefined, forType + 'F', discriminator, registry, node))
+  return outFile
+    .merge(deriveTypeLambda(undefined, forType + 'F', registries.typeLambda, node))
+    .merge(deriveCovariant(undefined, forType + 'F', discriminator, registries, node))
+    .merge(deriveFoldable(undefined, forType + 'F', discriminator, registries, node))
+    .merge(deriveTraversable(undefined, forType + 'F', discriminator, registries, node))
 }
 
 function handleTypeNodes (forType: string, tyParam: string, tyNodes: TypeNode[]): void {

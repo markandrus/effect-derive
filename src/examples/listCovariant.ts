@@ -31,3 +31,4 @@ export const listCovariant: covariant.Covariant<ListTypeLambda> = {
   imap,
   map
 }
+

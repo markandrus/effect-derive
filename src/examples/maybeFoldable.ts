@@ -23,3 +23,4 @@ export const maybeFoldable: foldable.Foldable<MaybeTypeLambda> = {
     }
   )
 }
+

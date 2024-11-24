@@ -1,12 +1,13 @@
 import { Node, type TypeNode, type TypeAliasDeclaration } from 'ts-morph'
 
+import { deriveTypeLambda } from './deriveTypeLambda'
 import { OutFile } from './OutFile'
-import { type Registry } from './Registry'
+import { type Registries } from './Registry'
 import { createRegistryMatcher, RegistryMatcher } from './RegistryMatcher'
 
 const tyParamPlaceholders = ['C', 'D']
 
-export function deriveTraversable (inFilePath: string | undefined, forType: string, discriminator: string | undefined, registry: Registry, node: TypeAliasDeclaration): OutFile {
+export function deriveTraversable (inFilePath: string | undefined, forType: string, discriminator: string | undefined, registries: Registries, node: TypeAliasDeclaration): OutFile {
   const outFile = new OutFile()
 
   const tyParams = node.getTypeParameters()
@@ -19,17 +20,14 @@ export function deriveTraversable (inFilePath: string | undefined, forType: stri
   // In Haskell-style, we take the rightmost type parameter to be the "hole".
   const holeIndex = tyParams.length - 1
   const tyParam = tyParams[holeIndex]
-  registry = new Map(registry)
-  registry.set(forType, [holeIndex, 'traverse'])
-  const matcher = createRegistryMatcher(registry)
+  registries.traversable.set(forType, [holeIndex, 'traverse'])
 
-  let typeLambdaParams = ''
+  const matcher = createRegistryMatcher(registries.traversable)
+
   let freeTyParams = ''
   for (let i = tyParams.length - 2; i >= 0; i--) {
-    typeLambdaParams += `this["Out${i + 1}"], `
     freeTyParams += `${tyParamPlaceholders[i]}${i > 0 ? ', ' : ''}`
   }
-  typeLambdaParams += 'this["Target"]'
 
   const freeTyParamsPrefix = freeTyParams === '' ? '' : `${freeTyParams}, `
   freeTyParams = freeTyParams === '' ? '' : `<${freeTyParams}>`
@@ -52,16 +50,15 @@ export function deriveTraversable (inFilePath: string | undefined, forType: stri
     .addPackageAsteriskImport('@effect/typeclass/Traversable', 'traversable')
     .addPackageImport('effect/Function', 'dual')
     .addPackageImport('effect/HKT', 'Kind', true)
-    .addPackageImport('effect/HKT', 'TypeLambda', true)
+
+  if (!registries.typeLambda.has(forType)) {
+    outFile.merge(deriveTypeLambda(inFilePath, forType, registries.typeLambda, node))
+  }
 
   if (inFilePath != null) outFile.addLocalImport(inFilePath, forType, true)
 
   // TODO(mroberts): Maybe OutFile needs to track which type lambdas have been declared, too?
   return outFile.addDeclarations(`\
-export interface ${forType}TypeLambda extends TypeLambda {
-  readonly type: ${forType}<${typeLambdaParams}>
-}
-
 export const traverse = <F extends TypeLambda>(
   F: applicative.Applicative<F>
 ): {
@@ -88,6 +85,7 @@ ${switchStmt}
 export const ${forType[0].toLowerCase() + forType.slice(1)}Traversable: traversable.Traversable<${forType}TypeLambda> = {
   traverse
 }
+
 `)
 }
 

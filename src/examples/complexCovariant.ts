@@ -38,3 +38,4 @@ export const complexCovariant: covariant.Covariant<ComplexTypeLambda> = {
   imap,
   map
 }
+

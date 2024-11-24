@@ -45,3 +45,4 @@ export const traverse = <F extends TypeLambda>(
 export const sumTraversable: traversable.Traversable<SumTypeLambda> = {
   traverse
 }
+

@@ -24,3 +24,4 @@ export const productCovariant: covariant.Covariant<ProductTypeLambda> = {
   imap,
   map
 }
+

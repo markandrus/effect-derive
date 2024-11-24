@@ -23,3 +23,4 @@ export const listFoldable: foldable.Foldable<ListTypeLambda> = {
     }
   )
 }
+

@@ -64,3 +64,4 @@ export const traverse = <F extends TypeLambda>(
 export const complexTraversable: traversable.Traversable<ComplexTypeLambda> = {
   traverse
 }
+

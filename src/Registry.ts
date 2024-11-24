@@ -8,17 +8,20 @@ export interface Registries {
   covariant: Registry
   foldable: Registry
   traversable: Registry
+  typeLambda: Registry
 }
 
 export interface RegistryFlags {
   covariant: string[]
   foldable: string[]
   traversable: string[]
+  typeLambda: string[]
 }
 
-const parseCovariantFlags = createInstanceFlagsParser('Covariant', 'map')
-const parseFoldableFlags = createInstanceFlagsParser('Foldable', 'reduce')
-const parseTraversableFlags = createInstanceFlagsParser('Traversable', 'traverse')
+const parseCovariantFlags = createInstanceFlagsParser('--covariant', 'Covariant', 'map')
+const parseFoldableFlags = createInstanceFlagsParser('--foldable', 'Foldable', 'reduce')
+const parseTraversableFlags = createInstanceFlagsParser('--traversable', 'Traversable', 'traverse')
+const parseTypeLambdaFlags = createInstanceFlagsParser('--type-lambda', 'TypeLambda', '')
 
 export function parseRegistryFlags (cwd: string, inFilePath: string, outFilePath: string, flags: RegistryFlags): [Registries, OutFile] {
   const outFile = new OutFile()
@@ -26,29 +29,29 @@ export function parseRegistryFlags (cwd: string, inFilePath: string, outFilePath
   const [covariant, outFile1] = parseCovariantFlags(cwd, inFilePath, outFilePath, flags.covariant)
   const [foldable, outFile2] = parseFoldableFlags(cwd, inFilePath, outFilePath, flags.foldable)
   const [traversable, outFile3] = parseTraversableFlags(cwd, inFilePath, outFilePath, flags.traversable)
+  const [typeLambda, outFile4] = parseTypeLambdaFlags(cwd, inFilePath, outFilePath, flags.typeLambda)
 
   const registries = {
     covariant,
     foldable,
-    traversable
+    traversable,
+    typeLambda
   }
 
   return [registries, outFile.merge(outFile1).merge(outFile2).merge(outFile3)]
 }
 
-function createInstanceFlagsParser (instance: String, fn: string): (cwd: string, inFilePath: string, outFilePath: string, flags: string[]) => [Registry, OutFile] {
+function createInstanceFlagsParser (flagName: string, instance: String, fn: string): (cwd: string, inFilePath: string, outFilePath: string, flags: string[]) => [Registry, OutFile] {
   return (cwd, inFilePath, outFilePath, flags) => {
-    const flagName = instance.toLowerCase()
-
     const registry: Registry = new Map()
     const outFile = new OutFile()
   
     for (const flag of flags) {
       const parts = flag.split('#')
       if (parts.length < 2) {
-        throw new Error(`Failed to parse --${flagName} flag: expected at least an import path and a type name`)
+        throw new Error(`Failed to parse ${flagName} flag: expected at least an import path and a type name`)
       } else if (parts.length > 3) {
-        throw new Error(`Failed to parse --${flagName} flag: expected at most an import path, an import name, and a type name`)
+        throw new Error(`Failed to parse ${flagName} flag: expected at most an import path, an import name, and a type name`)
       }
   
       let importPath: string = parts[0]
@@ -65,7 +68,7 @@ function createInstanceFlagsParser (instance: String, fn: string): (cwd: string,
       const [name, holeIndex] = parseTypeWithHole(tyName)
   
       if (registry.has(name)) {
-        throw new Error(`--${flagName} flag for type name ${tyName} was already provided`)
+        throw new Error(`${flagName} flag for type name ${tyName} was already provided`)
       }
       registry.set(name, [holeIndex, `${name}${instance}.${fn}`])
   

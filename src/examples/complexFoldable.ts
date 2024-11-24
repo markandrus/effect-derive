@@ -30,3 +30,4 @@ export const complexFoldable: foldable.Foldable<ComplexTypeLambda> = {
     }
   )
 }
+

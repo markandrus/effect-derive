@@ -16,3 +16,4 @@ export const productFoldable: foldable.Foldable<ProductTypeLambda> = {
     }
   )
 }
+

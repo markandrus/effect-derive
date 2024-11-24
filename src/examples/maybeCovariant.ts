@@ -31,3 +31,4 @@ export const maybeCovariant: covariant.Covariant<MaybeTypeLambda> = {
   imap,
   map
 }
+

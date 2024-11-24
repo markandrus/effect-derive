@@ -25,3 +25,4 @@ export const nonEmptyListCovariant: covariant.Covariant<NonEmptyListTypeLambda> 
   imap,
   map
 }
+

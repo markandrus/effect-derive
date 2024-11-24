@@ -37,3 +37,4 @@ export const traverse = <F extends TypeLambda>(
 export const productTraversable: traversable.Traversable<ProductTypeLambda> = {
   traverse
 }
+

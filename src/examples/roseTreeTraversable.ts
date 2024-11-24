@@ -39,3 +39,4 @@ export const traverse = <F extends TypeLambda>(
 export const roseTreeTraversable: traversable.Traversable<RoseTreeTypeLambda> = {
   traverse
 }
+
