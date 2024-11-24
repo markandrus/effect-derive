@@ -7,7 +7,7 @@ import { deriveTypeLambda } from './deriveTypeLambda'
 import { OutFile } from './OutFile'
 import { type Registries } from './Registry'
 
-export function deriveBaseFunctor (inFilePath: string, forType: string, discriminator: string | undefined, registries: Registries, node: TypeAliasDeclaration, deriveRecursive: boolean, derivedCorecursive: boolean): OutFile {
+export function deriveBaseFunctor (inFilePath: string, forType: string, discriminator: string | undefined, registries: Registries, node: TypeAliasDeclaration, extrasToDerive: Set<string>): OutFile {
   const outFile = new OutFile()
 
   const tyParams = node.getTypeParameters()
@@ -55,8 +55,14 @@ export function deriveBaseFunctor (inFilePath: string, forType: string, discrimi
   outFile
     .merge(deriveTypeLambda(undefined, forType + 'F', registries.typeLambda, node))
     .merge(deriveCovariant(undefined, forType + 'F', discriminator, registries, node))
-    .merge(deriveFoldable(undefined, forType + 'F', discriminator, registries, node))
-    .merge(deriveTraversable(undefined, forType + 'F', discriminator, registries, node))
+
+  if (extrasToDerive.has('Foldable')) { 
+    outFile.merge(deriveFoldable(undefined, forType + 'F', discriminator, registries, node))
+  }
+
+  if (extrasToDerive.has('Traversable')) {
+    outFile.merge(deriveTraversable(undefined, forType + 'F', discriminator, registries, node))
+  }
 
   // TODO(mroberts): We should publish these, so that we don't have to use relative
   // paths, which won't work in other projects.
@@ -64,7 +70,7 @@ export function deriveBaseFunctor (inFilePath: string, forType: string, discrimi
     .addLocalImport('../Recursive', 'Recursive', 'R', true)  
     .addLocalImport('../Corecursive', 'Corecursive', 'C', true)  
   
-  if (deriveRecursive) {
+  if (extrasToDerive.has('Recursive')) {
     outFile
       .addLocalImport('../Recursive', 'Recursive', 'R', true)  
       .addDeclarations(`\
@@ -76,7 +82,7 @@ export const Recursive: ${freeTyParams !== '' ? `${freeTyParams}() => ` : ''}R<$
 `)
   }
 
-  if (derivedCorecursive) {
+  if (extrasToDerive.has('Corecursive')) {
     outFile
       .addLocalImport('../Corecursive', 'Corecursive', 'C', true)  
       .addDeclarations(`\

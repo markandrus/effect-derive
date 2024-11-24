@@ -1,7 +1,7 @@
 {
   "name": "@markandrus/effect-derive",
-  "version": "0.1.2",
-  "description": "Derive Covariant (Functor) instances and base functors for algebraic data types (ADTs)",
+  "version": "0.1.1",
+  "description": "Derive Covariant (Functor), Foldable, and Traversable instances, as well as base functors, for algebraic data types (ADTs)",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
@@ -19,7 +19,7 @@
     "generate:ListF": "tsx src/index.ts BaseFunctor Recursive Corecursive --for-type List --discriminator type --in-file src/examples/List.ts --out-file src/examples/ListF.derived.ts --type-lambda './src/examples/List.derived#ListTypeLambda#List'",
     "generate:Maybe": "tsx src/index.ts Covariant Foldable Traversable --for-type Maybe --discriminator type --in-file src/examples/Maybe.ts --out-file src/examples/Maybe.derived.ts",
     "generate:NonEmptyList": "tsx src/index.ts Covariant Foldable Traversable --for-type NonEmptyList --in-file src/examples/NonEmptyList.ts --out-file src/examples/NonEmptyList.derived.ts --covariant './src/examples/Maybe.derived#Covariant#Maybe<_>' --foldable './src/examples/Maybe.derived#Foldable#Maybe<_>' --traversable './src/examples/Maybe.derived#Traversable#Maybe<_>'",
-    "generate:PeanoF": "tsx src/index.ts BaseFunctor Recursive Corecursive --for-type Peano --discriminator type --in-file src/examples/Peano.ts --out-file src/examples/PeanoF.derived.ts",
+    "generate:PeanoF": "tsx src/index.ts BaseFunctor Foldable Traversable Recursive Corecursive --for-type Peano --discriminator type --in-file src/examples/Peano.ts --out-file src/examples/PeanoF.derived.ts",
     "generate:Product": "tsx src/index.ts Covariant Foldable Traversable --for-type Product --in-file src/examples/Product.ts --out-file src/examples/Product.derived.ts",
     "generate:RoseTree": "tsx src/index.ts Covariant Foldable Traversable --for-type RoseTree --in-file src/examples/RoseTree.ts --out-file src/examples/RoseTree.derived.ts --covariant '@effect/typeclass/data/Array#Covariant#ReadonlyArray<_>' --foldable '@effect/typeclass/data/Array#Foldable#ReadonlyArray<_>' --traversable '@effect/typeclass/data/Array#Traversable#ReadonlyArray<_>'",
     "generate:Sum": "tsx src/index.ts Covariant Foldable Traversable --for-type Sum --discriminator type --in-file src/examples/Sum.ts --out-file src/examples/Sum.derived.ts",
@@ -28,9 +28,13 @@
   },
   "keywords": [
     "effect",
+    "derive",
     "deriving",
     "functor",
     "covariant",
+    "foldable",
+    "traversable",
+    "corecursive",
     "recursion-schemes"
   ],
   "author": "Mark Roberts <markandrusroberts@gmail.com>",

@@ -42,6 +42,15 @@ export function main () {
     throw new Error('Deriving "Recursive" or "Corecursive" requires deriving "BaseFunctor"; ensure you pass the positional argument "BaseFunctor"')
   }
 
+  const extrasToDerive = new Set<string>()
+  if (derivations.has('BaseFunctor')) {
+    for (const derivation of derivations) {
+      if (derivation === 'BaseFunctor') continue
+      derivations.delete(derivation)
+      extrasToDerive.add(derivation)
+    }
+  }
+
   let inFilePath = flags['in-file']
   if (inFilePath == null) {
     throw new Error('--in-file is required')
@@ -80,7 +89,7 @@ export function main () {
         outFile.merge(deriveCovariant(inFilePath, forType, discriminator, registries, tyAliasDecl))
         break
       case 'BaseFunctor':
-        outFile.merge(deriveBaseFunctor(inFilePath, forType, discriminator, registries, tyAliasDecl, derivations.has('Recursive'), derivations.has('Corecursive')))
+        outFile.merge(deriveBaseFunctor(inFilePath, forType, discriminator, registries, tyAliasDecl, extrasToDerive))
         break
       case 'Foldable':
         outFile.merge(deriveFoldable(inFilePath, forType, discriminator, registries, tyAliasDecl))
