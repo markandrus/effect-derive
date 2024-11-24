@@ -1,13 +1,55 @@
 import * as applicative from "@effect/typeclass/Applicative"
+import * as covariant from "@effect/typeclass/Covariant"
+import * as foldable from "@effect/typeclass/Foldable"
 import { ap as makeAp } from "@effect/typeclass/SemiApplicative"
 import * as traversable from "@effect/typeclass/Traversable"
 import { dual } from "effect/Function"
-import { type Kind, type TypeLambda } from "effect/HKT"
+import { type TypeLambda, type Kind } from "effect/HKT"
 
 import { type Maybe } from "./Maybe"
 
 export interface MaybeTypeLambda extends TypeLambda {
   readonly type: Maybe<this["Target"]>
+}
+
+export const map: {
+  <A, B>(f: (a: A) => B): (self: Maybe<A>) => Maybe<B>
+  <A, B>(self: Maybe<A>, f: (a: A) => B): Maybe<B>
+} = dual(
+  2,
+  <A, B>(self: Maybe<A>, f: (a: A) => B): Maybe<B> => {
+    switch (self["type"]) {
+      case 'Nothing':
+        return self
+      case 'Just':
+        return { ...self, "a": f(self["a"]) }
+      default:
+        throw new Error(`Unknown tag "${self["type"]}"`)
+    }
+  }
+)
+
+const imap = covariant.imap<MaybeTypeLambda>(map)
+
+export const maybeCovariant: covariant.Covariant<MaybeTypeLambda> = {
+  imap,
+  map
+}
+
+export const maybeFoldable: foldable.Foldable<MaybeTypeLambda> = {
+  reduce: dual(
+    3,
+    function reduce<A, B>(self: Maybe<A>, b: B, f: (b: B, a: A) => B): B {
+      switch (self["type"]) {
+        case 'Nothing':
+          return b
+        case 'Just':
+          return f(b, self["a"])
+        default:
+          throw new Error(`Unknown tag "${self["type"]}"`)
+      }
+    }
+  )
 }
 
 export const traverse = <F extends TypeLambda>(

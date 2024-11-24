@@ -1,14 +1,42 @@
 import * as applicative from "@effect/typeclass/Applicative"
+import * as covariant from "@effect/typeclass/Covariant"
+import * as foldable from "@effect/typeclass/Foldable"
 import { ap as makeAp } from "@effect/typeclass/SemiApplicative"
 import * as traversable from "@effect/typeclass/Traversable"
-import { Traversable as ReadonlyArrayTraversable } from "@effect/typeclass/data/Array"
+import { Covariant as ReadonlyArrayCovariant, Foldable as ReadonlyArrayFoldable, Traversable as ReadonlyArrayTraversable } from "@effect/typeclass/data/Array"
 import { dual } from "effect/Function"
-import { type Kind, type TypeLambda } from "effect/HKT"
+import { type TypeLambda, type Kind } from "effect/HKT"
 
 import { type RoseTree } from "./RoseTree"
 
 export interface RoseTreeTypeLambda extends TypeLambda {
   readonly type: RoseTree<this["Target"]>
+}
+
+export const map: {
+  <A, B>(f: (a: A) => B): (self: RoseTree<A>) => RoseTree<B>
+  <A, B>(self: RoseTree<A>, f: (a: A) => B): RoseTree<B>
+} = dual(
+  2,
+  <A, B>(self: RoseTree<A>, f: (a: A) => B): RoseTree<B> => {
+    return { ...self, "rootLabel": f(self["rootLabel"]), "subForest": ReadonlyArrayCovariant.map(self["subForest"], _ => map(_, f)) }
+  }
+)
+
+const imap = covariant.imap<RoseTreeTypeLambda>(map)
+
+export const roseTreeCovariant: covariant.Covariant<RoseTreeTypeLambda> = {
+  imap,
+  map
+}
+
+export const roseTreeFoldable: foldable.Foldable<RoseTreeTypeLambda> = {
+  reduce: dual(
+    3,
+    function reduce<A, B>(self: RoseTree<A>, b: B, f: (b: B, a: A) => B): B {
+      return ReadonlyArrayFoldable.reduce(self["subForest"], f(b, self["rootLabel"]), (b, t) => reduce(t, b, f))
+    }
+  )
 }
 
 export const traverse = <F extends TypeLambda>(

@@ -3,8 +3,7 @@ import { suite, test } from 'node:test'
 
 import { ana, type Corecursive } from '../src/Corecursive'
 import { type List } from '../src/examples/List'
-import { type ListTypeLambda } from '../src/examples/listCovariant'
-import { listFoldable } from '../src/examples/listFoldable'
+import { listFoldable, type ListTypeLambda } from '../src/examples/List.derived'
 import { listFCovariant, type ListFTypeLambda } from '../src/examples/ListF'
 import { cata, type Recursive } from '../src/Recursive'
 
