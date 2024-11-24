@@ -1,25 +1,15 @@
 import * as assert from 'node:assert'
 import { suite, test } from 'node:test'
 
-import { ana, type Corecursive } from '../src/Corecursive'
+import { ana } from '../src/Corecursive'
 import { type List } from '../src/examples/List'
-import { listFoldable, type ListTypeLambda } from '../src/examples/List.derived'
-import { listFCovariant, type ListFTypeLambda } from '../src/examples/ListF'
-import { cata, type Recursive } from '../src/Recursive'
+import { Foldable as ListFoldable } from '../src/examples/List.derived'
+import { Corecursive as ListCorecursive, Recursive as ListRecursive } from '../src/examples/ListF.derived'
+import { cata } from '../src/Recursive'
 
-const toArrayReduce = <A>(list: List<A>): A[] => listFoldable.reduce<A, A[]>([], (as, a) => as.concat([a]))(list) 
+const toArrayReduce = <A>(list: List<A>): A[] => ListFoldable.reduce<A, A[]>([], (as, a) => as.concat([a]))(list) 
 
-const listRecursive: <A>() => Recursive<ListTypeLambda, ListFTypeLambda, never, never, never, A, never, never, A> = () => ({
-  F: listFCovariant,
-  project: t => t
-})
-
-const listCorecursive: Corecursive<ListTypeLambda, ListFTypeLambda> = {
-  F: listFCovariant,
-  embed: t => t
-}
-
-const toArrayCata = <A>(list: List<A>): A[] => cata(listRecursive<A>())<A[]>(listF => {
+const toArrayCata = <A>(list: List<A>): A[] => cata(ListRecursive<A>())<A[]>(listF => {
   switch (listF.type) {
     case 'Nil':
       return []
@@ -28,7 +18,7 @@ const toArrayCata = <A>(list: List<A>): A[] => cata(listRecursive<A>())<A[]>(lis
   }
 })(list)
 
-const fromArrayAna = <A>(as: A[]): List<A> => ana(listCorecursive)<A, A[]>(as => {
+const fromArrayAna = <A>(as: A[]): List<A> => ana(ListCorecursive<A>())<A[]>(as => {
   if (as.length === 0) {
     return { type: 'Nil' }
   } else {

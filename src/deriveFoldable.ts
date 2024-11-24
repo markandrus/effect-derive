@@ -56,7 +56,7 @@ export function deriveFoldable (inFilePath: string | undefined, forType: string,
 
   // TODO(mroberts): Maybe OutFile needs to track which type lambdas have been declared, too?
   return outFile.addDeclarations(`\
-export const ${forType[0].toLowerCase() + forType.slice(1)}Foldable: foldable.Foldable<${forType}TypeLambda> = {
+export const Foldable: foldable.Foldable<${forType}TypeLambda> = {
   reduce: dual(
     3,
     function reduce<${freeTyParamsPrefix}A, B>(self: ${forType}<${freeTyParamsPrefix}A>, b: B, f: (b: B, a: A) => B): B {

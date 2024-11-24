@@ -5,25 +5,15 @@ import { type TypeLambda } from 'effect/HKT'
 
 import { ana, type Corecursive } from '../src/Corecursive'
 import { type Peano } from '../src/examples/Peano'
-import { type PeanoFTypeLambda, peanoFCovariant } from '../src/examples/PeanoF'
+import { Corecursive as PeanoCorecursive, Recursive as PeanoRecursive } from '../src/examples/PeanoF.derived'
 import { cata, type Recursive } from '../src/Recursive'
 
 interface PeanoTypeLambda extends TypeLambda {
   readonly type: Peano
 }
 
-const peanoRecursive: Recursive<PeanoTypeLambda, PeanoFTypeLambda, never, never, never, never, never, never, never> = {
-  F: peanoFCovariant,
-  project: t => t
-}
-
-const peanoCorecursive: Corecursive<PeanoTypeLambda, PeanoFTypeLambda> = {
-  F: peanoFCovariant,
-  embed: t => t
-}
-
 function toNumber (peano: Peano): number {
-  return cata(peanoRecursive)<number>(peanoF => {
+  return cata(PeanoRecursive)<number>(peanoF => {
     switch (peanoF.type) {
       case 'Z':
         return 0
@@ -34,7 +24,7 @@ function toNumber (peano: Peano): number {
 }
 
 function fromNumber (number: number): Peano {
-  return ana(peanoCorecursive)<number, number>(number => {
+  return ana(PeanoCorecursive)<number>(number => {
     return number <= 0
       ? { type: 'Z' }
       : { type: 'S', succ: number - 1 }

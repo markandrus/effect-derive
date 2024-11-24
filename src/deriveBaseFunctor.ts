@@ -7,18 +7,29 @@ import { deriveTypeLambda } from './deriveTypeLambda'
 import { OutFile } from './OutFile'
 import { type Registries } from './Registry'
 
-export function deriveBaseFunctor (_inFilePath: string, forType: string, discriminator: string | undefined, registries: Registries, node: TypeAliasDeclaration): OutFile {
+export function deriveBaseFunctor (inFilePath: string, forType: string, discriminator: string | undefined, registries: Registries, node: TypeAliasDeclaration, deriveRecursive: boolean, derivedCorecursive: boolean): OutFile {
   const outFile = new OutFile()
 
   const tyParams = node.getTypeParameters()
-  if (tyParams.length > 3) {
-    throw new Error('At most 3 type parameters are supported when deriving functor, due to limitations in effect\'s HKT encoding')
+  if (tyParams.length > 2) {
+    throw new Error('At most 2 type parameters are supported when deriving baase functor, due to limitations in effect\'s HKT encoding')
   }
+
+  const tA = tyParams.length > 0 ? 'A' : 'never'
+  const tE = tyParams.length > 1 ? 'E' : 'never'
+  const freeTyParams = tA !== 'never' || tE !== 'never'
+    ? `<${tE !== 'never' ? `${tE}, ` : ''}${tA}>`
+    : ''
 
   const tyParamsSet = new Set(tyParams.map(tyParam => tyParam.getText()))
   let newTyParamName = 'X'
   for (let i = 0; tyParamsSet.has(newTyParamName); i++) {
     newTyParamName = `X${i + 1}`
+  }
+
+  // NOTE(mroberts): Do this before mutating `node`.
+  if (!registries.typeLambda.has(forType)) {
+    outFile.merge(deriveTypeLambda(inFilePath, forType, registries.typeLambda, node))
   }
 
   node.insertTypeParameter(tyParams.length, {
@@ -41,11 +52,43 @@ export function deriveBaseFunctor (_inFilePath: string, forType: string, discrim
 
   outFile.addDeclarations(node.print() + '\n\n')
 
-  return outFile
+  outFile
     .merge(deriveTypeLambda(undefined, forType + 'F', registries.typeLambda, node))
     .merge(deriveCovariant(undefined, forType + 'F', discriminator, registries, node))
     .merge(deriveFoldable(undefined, forType + 'F', discriminator, registries, node))
     .merge(deriveTraversable(undefined, forType + 'F', discriminator, registries, node))
+
+  // TODO(mroberts): We should publish these, so that we don't have to use relative
+  // paths, which won't work in other projects.
+  outFile
+    .addLocalImport('../Recursive', 'Recursive', 'R', true)  
+    .addLocalImport('../Corecursive', 'Corecursive', 'C', true)  
+  
+  if (deriveRecursive) {
+    outFile
+      .addLocalImport('../Recursive', 'Recursive', 'R', true)  
+      .addDeclarations(`\
+export const Recursive: ${freeTyParams !== '' ? `${freeTyParams}() => ` : ''}R<${forType}TypeLambda, ${forType}FTypeLambda, never, never, ${tE}, ${tA}, never, ${tE}, ${tA}> = ${freeTyParams !== '' ? '() => (' : ''}{
+  F: Covariant,
+  project: t => t
+}${freeTyParams !== '' ? ')' : ''}
+
+`)
+  }
+
+  if (derivedCorecursive) {
+    outFile
+      .addLocalImport('../Corecursive', 'Corecursive', 'C', true)  
+      .addDeclarations(`\
+export const Corecursive: ${freeTyParams !== '' ? `${freeTyParams}() => ` : ''}C<${forType}TypeLambda, ${forType}FTypeLambda, never, never, ${tE}, ${tA}, never, ${tE}, ${tA}> = ${freeTyParams !== '' ? '() => (' : ''}{
+  F: Covariant,
+  embed: t => t
+}${freeTyParams !== '' ? ')' : ''}
+
+`)
+  }
+
+  return outFile  
 }
 
 function handleTypeNodes (forType: string, tyParam: string, tyNodes: TypeNode[]): void {

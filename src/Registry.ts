@@ -18,10 +18,10 @@ export interface RegistryFlags {
   typeLambda: string[]
 }
 
-const parseCovariantFlags = createInstanceFlagsParser('--covariant', 'Covariant', 'map')
-const parseFoldableFlags = createInstanceFlagsParser('--foldable', 'Foldable', 'reduce')
-const parseTraversableFlags = createInstanceFlagsParser('--traversable', 'Traversable', 'traverse')
-const parseTypeLambdaFlags = createInstanceFlagsParser('--type-lambda', 'TypeLambda', '')
+const parseCovariantFlags = createInstanceFlagsParser('--covariant', 'Covariant', true, 'map')
+const parseFoldableFlags = createInstanceFlagsParser('--foldable', 'Foldable', true, 'reduce')
+const parseTraversableFlags = createInstanceFlagsParser('--traversable', 'Traversable', true, 'traverse')
+const parseTypeLambdaFlags = createInstanceFlagsParser('--type-lambda', 'TypeLambda', false, '')
 
 export function parseRegistryFlags (cwd: string, inFilePath: string, outFilePath: string, flags: RegistryFlags): [Registries, OutFile] {
   const outFile = new OutFile()
@@ -38,10 +38,10 @@ export function parseRegistryFlags (cwd: string, inFilePath: string, outFilePath
     typeLambda
   }
 
-  return [registries, outFile.merge(outFile1).merge(outFile2).merge(outFile3)]
+  return [registries, outFile.merge(outFile1).merge(outFile2).merge(outFile3).merge(outFile4)]
 }
 
-function createInstanceFlagsParser (flagName: string, instance: String, fn: string): (cwd: string, inFilePath: string, outFilePath: string, flags: string[]) => [Registry, OutFile] {
+function createInstanceFlagsParser (flagName: string, instance: String, expectHole: boolean, fn: string): (cwd: string, inFilePath: string, outFilePath: string, flags: string[]) => [Registry, OutFile] {
   return (cwd, inFilePath, outFilePath, flags) => {
     const registry: Registry = new Map()
     const outFile = new OutFile()
@@ -65,7 +65,7 @@ function createInstanceFlagsParser (flagName: string, instance: String, fn: stri
         tyName = parts[2]
       }
   
-      const [name, holeIndex] = parseTypeWithHole(tyName)
+      const [name, holeIndex] = parseTypeWithHole(tyName, expectHole)
   
       if (registry.has(name)) {
         throw new Error(`${flagName} flag for type name ${tyName} was already provided`)

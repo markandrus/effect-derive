@@ -82,7 +82,7 @@ ${switchStmt}
   )
 }
 
-export const ${forType[0].toLowerCase() + forType.slice(1)}Traversable: traversable.Traversable<${forType}TypeLambda> = {
+export const Traversable: traversable.Traversable<${forType}TypeLambda> = {
   traverse
 }
 

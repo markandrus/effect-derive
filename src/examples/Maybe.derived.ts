@@ -31,12 +31,12 @@ export const map: {
 
 const imap = covariant.imap<MaybeTypeLambda>(map)
 
-export const maybeCovariant: covariant.Covariant<MaybeTypeLambda> = {
+export const Covariant: covariant.Covariant<MaybeTypeLambda> = {
   imap,
   map
 }
 
-export const maybeFoldable: foldable.Foldable<MaybeTypeLambda> = {
+export const Foldable: foldable.Foldable<MaybeTypeLambda> = {
   reduce: dual(
     3,
     function reduce<A, B>(self: Maybe<A>, b: B, f: (b: B, a: A) => B): B {
@@ -84,7 +84,7 @@ export const traverse = <F extends TypeLambda>(
   )
 }
 
-export const maybeTraversable: traversable.Traversable<MaybeTypeLambda> = {
+export const Traversable: traversable.Traversable<MaybeTypeLambda> = {
   traverse
 }
 

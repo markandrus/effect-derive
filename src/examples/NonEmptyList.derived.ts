@@ -6,7 +6,7 @@ import * as traversable from "@effect/typeclass/Traversable"
 import { dual } from "effect/Function"
 import { type TypeLambda, type Kind } from "effect/HKT"
 
-import { maybeCovariant as MaybeCovariant, maybeFoldable as MaybeFoldable, maybeTraversable as MaybeTraversable } from "./Maybe.derived"
+import { Covariant as MaybeCovariant, Foldable as MaybeFoldable, Traversable as MaybeTraversable } from "./Maybe.derived"
 import { type NonEmptyList } from "./NonEmptyList"
 
 export interface NonEmptyListTypeLambda extends TypeLambda {
@@ -25,12 +25,12 @@ export const map: {
 
 const imap = covariant.imap<NonEmptyListTypeLambda>(map)
 
-export const nonEmptyListCovariant: covariant.Covariant<NonEmptyListTypeLambda> = {
+export const Covariant: covariant.Covariant<NonEmptyListTypeLambda> = {
   imap,
   map
 }
 
-export const nonEmptyListFoldable: foldable.Foldable<NonEmptyListTypeLambda> = {
+export const Foldable: foldable.Foldable<NonEmptyListTypeLambda> = {
   reduce: dual(
     3,
     function reduce<A, B>(self: NonEmptyList<A>, b: B, f: (b: B, a: A) => B): B {
@@ -64,7 +64,7 @@ export const traverse = <F extends TypeLambda>(
   )
 }
 
-export const nonEmptyListTraversable: traversable.Traversable<NonEmptyListTypeLambda> = {
+export const Traversable: traversable.Traversable<NonEmptyListTypeLambda> = {
   traverse
 }
 

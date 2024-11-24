@@ -17,7 +17,7 @@ export * from './Recursive'
 
 export function main () {
   const {
-    positionals: derivations,
+    positionals,
     values: flags
   } = util.parseArgs({
     allowPositionals: true,
@@ -33,8 +33,13 @@ export function main () {
     }
   })
 
-  if (derivations.length === 0) {
+  const derivations = new Set(positionals)
+  if (derivations.size === 0) {
     throw new Error(`At least one positional argument is required ("Covariant", "BaseFunctor", "Foldable", "Traversable" or "TypeLambda")`)
+  }
+
+  if ((derivations.has('Recursive') || derivations.has('Corecursive')) && !derivations.has('BaseFunctor')) {
+    throw new Error('Deriving "Recursive" or "Corecursive" requires deriving "BaseFunctor"; ensure you pass the positional argument "BaseFunctor"')
   }
 
   let inFilePath = flags['in-file']
@@ -75,7 +80,7 @@ export function main () {
         outFile.merge(deriveCovariant(inFilePath, forType, discriminator, registries, tyAliasDecl))
         break
       case 'BaseFunctor':
-        outFile.merge(deriveBaseFunctor(inFilePath, forType, discriminator, registries, tyAliasDecl))
+        outFile.merge(deriveBaseFunctor(inFilePath, forType, discriminator, registries, tyAliasDecl, derivations.has('Recursive'), derivations.has('Corecursive')))
         break
       case 'Foldable':
         outFile.merge(deriveFoldable(inFilePath, forType, discriminator, registries, tyAliasDecl))
@@ -85,6 +90,9 @@ export function main () {
         break
       case 'TypeLambda':
         outFile.merge(deriveTypeLambda(inFilePath, forType, registries.typeLambda, tyAliasDecl))
+        break
+      case 'Recursive':
+      case 'Corecursive':
         break
       default:
         throw new Error(`I don\'t know how to derive "${derivation}"`)

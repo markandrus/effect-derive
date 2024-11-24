@@ -24,12 +24,12 @@ export const map: {
 
 const imap = covariant.imap<ProductTypeLambda>(map)
 
-export const productCovariant: covariant.Covariant<ProductTypeLambda> = {
+export const Covariant: covariant.Covariant<ProductTypeLambda> = {
   imap,
   map
 }
 
-export const productFoldable: foldable.Foldable<ProductTypeLambda> = {
+export const Foldable: foldable.Foldable<ProductTypeLambda> = {
   reduce: dual(
     3,
     function reduce<C, A, B>(self: Product<C, A>, b: B, f: (b: B, a: A) => B): B {
@@ -62,7 +62,7 @@ export const traverse = <F extends TypeLambda>(
   )
 }
 
-export const productTraversable: traversable.Traversable<ProductTypeLambda> = {
+export const Traversable: traversable.Traversable<ProductTypeLambda> = {
   traverse
 }
 

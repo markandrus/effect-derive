@@ -25,12 +25,12 @@ export const map: {
 
 const imap = covariant.imap<RoseTreeTypeLambda>(map)
 
-export const roseTreeCovariant: covariant.Covariant<RoseTreeTypeLambda> = {
+export const Covariant: covariant.Covariant<RoseTreeTypeLambda> = {
   imap,
   map
 }
 
-export const roseTreeFoldable: foldable.Foldable<RoseTreeTypeLambda> = {
+export const Foldable: foldable.Foldable<RoseTreeTypeLambda> = {
   reduce: dual(
     3,
     function reduce<A, B>(self: RoseTree<A>, b: B, f: (b: B, a: A) => B): B {
@@ -64,7 +64,7 @@ export const traverse = <F extends TypeLambda>(
   )
 }
 
-export const roseTreeTraversable: traversable.Traversable<RoseTreeTypeLambda> = {
+export const Traversable: traversable.Traversable<RoseTreeTypeLambda> = {
   traverse
 }
 

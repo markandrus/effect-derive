@@ -67,7 +67,7 @@ ${switchStmt}
 
 const imap = covariant.imap<${forType}TypeLambda>(map)
 
-export const ${forType[0].toLowerCase() + forType.slice(1)}Covariant: covariant.Covariant<${forType}TypeLambda> = {
+export const Covariant: covariant.Covariant<${forType}TypeLambda> = {
   imap,
   map
 }

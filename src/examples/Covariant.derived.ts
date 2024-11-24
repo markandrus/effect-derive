@@ -8,8 +8,8 @@ import { dual } from "effect/Function"
 import { type TypeLambda, type Kind } from "effect/HKT"
 
 import { type Complex } from "./Complex"
-import { productCovariant as ProductCovariant, productFoldable as ProductFoldable, productTraversable as ProductTraversable } from "./Product.derived"
-import { sumCovariant as SumCovariant, sumFoldable as SumFoldable, sumTraversable as SumTraversable } from "./Sum.derived"
+import { Covariant as ProductCovariant, Foldable as ProductFoldable, Traversable as ProductTraversable } from "./Product.derived"
+import { Covariant as SumCovariant, Foldable as SumFoldable, Traversable as SumTraversable } from "./Sum.derived"
 
 export interface ComplexTypeLambda extends TypeLambda {
   readonly type: Complex<this["Target"]>
@@ -38,12 +38,12 @@ export const map: {
 
 const imap = covariant.imap<ComplexTypeLambda>(map)
 
-export const complexCovariant: covariant.Covariant<ComplexTypeLambda> = {
+export const Covariant: covariant.Covariant<ComplexTypeLambda> = {
   imap,
   map
 }
 
-export const complexFoldable: foldable.Foldable<ComplexTypeLambda> = {
+export const Foldable: foldable.Foldable<ComplexTypeLambda> = {
   reduce: dual(
     3,
     function reduce<A, B>(self: Complex<A>, b: B, f: (b: B, a: A) => B): B {
@@ -111,7 +111,7 @@ export const traverse = <F extends TypeLambda>(
   )
 }
 
-export const complexTraversable: traversable.Traversable<ComplexTypeLambda> = {
+export const Traversable: traversable.Traversable<ComplexTypeLambda> = {
   traverse
 }
 

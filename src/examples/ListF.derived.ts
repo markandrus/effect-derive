@@ -6,6 +6,10 @@ import * as traversable from "@effect/typeclass/Traversable"
 import { dual } from "effect/Function"
 import { type TypeLambda, type Kind } from "effect/HKT"
 
+import { type Corecursive as C } from "../Corecursive"
+import { type Recursive as R } from "../Recursive"
+import { ListTypeLambda as ListTypeLambda } from "./List.derived"
+
 export type ListF<A, X> = {
     type: 'Nil';
 } | {
@@ -37,12 +41,12 @@ export const map: {
 
 const imap = covariant.imap<ListFTypeLambda>(map)
 
-export const listFCovariant: covariant.Covariant<ListFTypeLambda> = {
+export const Covariant: covariant.Covariant<ListFTypeLambda> = {
   imap,
   map
 }
 
-export const listFFoldable: foldable.Foldable<ListFTypeLambda> = {
+export const Foldable: foldable.Foldable<ListFTypeLambda> = {
   reduce: dual(
     3,
     function reduce<C, A, B>(self: ListF<C, A>, b: B, f: (b: B, a: A) => B): B {
@@ -90,7 +94,17 @@ export const traverse = <F extends TypeLambda>(
   )
 }
 
-export const listFTraversable: traversable.Traversable<ListFTypeLambda> = {
+export const Traversable: traversable.Traversable<ListFTypeLambda> = {
   traverse
 }
+
+export const Recursive: <A>() => R<ListTypeLambda, ListFTypeLambda, never, never, never, A, never, never, A> = () => ({
+  F: Covariant,
+  project: t => t
+})
+
+export const Corecursive: <A>() => C<ListTypeLambda, ListFTypeLambda, never, never, never, A, never, never, A> = () => ({
+  F: Covariant,
+  embed: t => t
+})
 

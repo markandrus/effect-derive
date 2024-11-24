@@ -3,7 +3,7 @@ import { suite, test } from 'node:test'
 
 import { type TypeLambda } from 'effect/HKT'
 
-import { maybeCovariant, type MaybeTypeLambda } from '../src/examples/Maybe.derived'
+import { Covariant as MaybeCovariant, type MaybeTypeLambda } from '../src/examples/Maybe.derived'
 import { histo, type Recursive } from '../src/Recursive'
 
 interface NaturalTypeLambda extends TypeLambda {
@@ -11,7 +11,7 @@ interface NaturalTypeLambda extends TypeLambda {
 }
 
 const naturalRecursive: Recursive<NaturalTypeLambda, MaybeTypeLambda, never, never, never, never, never, never, never> = {
-  F: maybeCovariant,
+  F: MaybeCovariant,
   project: n => n === 0
     ? { type: 'Nothing' }
     : { type: 'Just', a: n - 1 }

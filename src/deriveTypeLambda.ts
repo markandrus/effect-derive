@@ -16,10 +16,15 @@ export function deriveTypeLambda (inFilePath: string | undefined, forType: strin
   registry.set(forType, [holeIndex, ''])
 
   let typeLambdaParams = ''
-  for (let i = tyParams.length - 2; i >= 0; i--) {
-    typeLambdaParams += `this["Out${i + 1}"], `
+  if (tyParams.length > 0) {
+    typeLambdaParams = '<'
+    for (let i = tyParams.length - 2; i >= 0; i--) {
+      typeLambdaParams += `this["Out${i + 1}"], `
+    }
+    if (tyParams.length > 0) {
+      typeLambdaParams += 'this["Target"]>'
+    }
   }
-  typeLambdaParams += 'this["Target"]'
 
   outFile
     .addPackageImport('effect/HKT', 'TypeLambda', true)
@@ -28,7 +33,7 @@ export function deriveTypeLambda (inFilePath: string | undefined, forType: strin
 
   return outFile.addDeclarations(`\
 export interface ${forType}TypeLambda extends TypeLambda {
-  readonly type: ${forType}<${typeLambdaParams}>
+  readonly type: ${forType}${typeLambdaParams}
 }
 
 `)

@@ -6,6 +6,14 @@ import * as traversable from "@effect/typeclass/Traversable"
 import { dual } from "effect/Function"
 import { type TypeLambda, type Kind } from "effect/HKT"
 
+import { type Corecursive as C } from "../Corecursive"
+import { type Recursive as R } from "../Recursive"
+import { type Peano } from "./Peano"
+
+export interface PeanoTypeLambda extends TypeLambda {
+  readonly type: Peano
+}
+
 export type PeanoF<X> = {
     type: 'Z';
 } | {
@@ -36,12 +44,12 @@ export const map: {
 
 const imap = covariant.imap<PeanoFTypeLambda>(map)
 
-export const peanoFCovariant: covariant.Covariant<PeanoFTypeLambda> = {
+export const Covariant: covariant.Covariant<PeanoFTypeLambda> = {
   imap,
   map
 }
 
-export const peanoFFoldable: foldable.Foldable<PeanoFTypeLambda> = {
+export const Foldable: foldable.Foldable<PeanoFTypeLambda> = {
   reduce: dual(
     3,
     function reduce<A, B>(self: PeanoF<A>, b: B, f: (b: B, a: A) => B): B {
@@ -89,7 +97,17 @@ export const traverse = <F extends TypeLambda>(
   )
 }
 
-export const peanoFTraversable: traversable.Traversable<PeanoFTypeLambda> = {
+export const Traversable: traversable.Traversable<PeanoFTypeLambda> = {
   traverse
+}
+
+export const Recursive: R<PeanoTypeLambda, PeanoFTypeLambda, never, never, never, never, never, never, never> = {
+  F: Covariant,
+  project: t => t
+}
+
+export const Corecursive: C<PeanoTypeLambda, PeanoFTypeLambda, never, never, never, never, never, never, never> = {
+  F: Covariant,
+  embed: t => t
 }
 

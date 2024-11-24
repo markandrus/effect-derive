@@ -31,12 +31,12 @@ export const map: {
 
 const imap = covariant.imap<ListTypeLambda>(map)
 
-export const listCovariant: covariant.Covariant<ListTypeLambda> = {
+export const Covariant: covariant.Covariant<ListTypeLambda> = {
   imap,
   map
 }
 
-export const listFoldable: foldable.Foldable<ListTypeLambda> = {
+export const Foldable: foldable.Foldable<ListTypeLambda> = {
   reduce: dual(
     3,
     function reduce<A, B>(self: List<A>, b: B, f: (b: B, a: A) => B): B {
@@ -85,7 +85,7 @@ export const traverse = <F extends TypeLambda>(
   )
 }
 
-export const listTraversable: traversable.Traversable<ListTypeLambda> = {
+export const Traversable: traversable.Traversable<ListTypeLambda> = {
   traverse
 }
 

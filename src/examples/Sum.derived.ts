@@ -31,12 +31,12 @@ export const map: {
 
 const imap = covariant.imap<SumTypeLambda>(map)
 
-export const sumCovariant: covariant.Covariant<SumTypeLambda> = {
+export const Covariant: covariant.Covariant<SumTypeLambda> = {
   imap,
   map
 }
 
-export const sumFoldable: foldable.Foldable<SumTypeLambda> = {
+export const Foldable: foldable.Foldable<SumTypeLambda> = {
   reduce: dual(
     3,
     function reduce<C, A, B>(self: Sum<C, A>, b: B, f: (b: B, a: A) => B): B {
@@ -84,7 +84,7 @@ export const traverse = <F extends TypeLambda>(
   )
 }
 
-export const sumTraversable: traversable.Traversable<SumTypeLambda> = {
+export const Traversable: traversable.Traversable<SumTypeLambda> = {
   traverse
 }
 
