@@ -1,20 +1,28 @@
 import { Node, type TypeAliasDeclaration, type TypeNode } from 'ts-morph'
 
 import { OutFile } from '../util/OutFile.ts'
-import { type Registries } from '../util/Registry.ts'
-import { createRegistryMatcher, type RegistryMatcher } from '../util/RegistryMatcher.ts'
+import type { Registries } from '../util/Registry.ts'
+import { type RegistryMatcher, createRegistryMatcher } from '../util/RegistryMatcher.ts'
 import deriveTypeLambda from './TypeLambda.ts'
 
 const tyParamPlaceholders = ['C', 'D']
 
-export default function (inFilePath: string | undefined, forType: string, discriminator: string | undefined, registries: Registries, node: TypeAliasDeclaration): OutFile {
+export default function (
+  inFilePath: string | undefined,
+  forType: string,
+  discriminator: string | undefined,
+  registries: Registries,
+  node: TypeAliasDeclaration
+): OutFile {
   const outFile = new OutFile()
 
   const tyParams = node.getTypeParameters()
   if (tyParams.length < 1) {
     throw new Error('At least one type parameter is required to derive Covariant')
   } else if (tyParams.length > 3) {
-    throw new Error('At most 3 type parameters are supported when deriving Covariant, due to limitations in effect\'s HKT encoding')
+    throw new Error(
+      "At most 3 type parameters are supported when deriving Covariant, due to limitations in effect's HKT encoding"
+    )
   }
 
   // In Haskell-style, we take the rightmost type parameter to be the "hole".
@@ -75,7 +83,13 @@ export const Covariant: covariant.Covariant<${forType}TypeLambda> = {
 `)
 }
 
-function handleTypeNodes (matcher: RegistryMatcher, forType: string, discriminator: string | undefined, tyParam: string, tyNodes: TypeNode[]): string {
+function handleTypeNodes(
+  matcher: RegistryMatcher,
+  forType: string,
+  discriminator: string | undefined,
+  tyParam: string,
+  tyNodes: TypeNode[]
+): string {
   let cases = ''
 
   for (const tyNode of tyNodes) {
@@ -93,7 +107,13 @@ ${cases}      default:
     }`
 }
 
-function handleTypeNode (matcher: RegistryMatcher, forType: string, discriminator: string | undefined, tyParam: string, tyNode: TypeNode): string {
+function handleTypeNode(
+  matcher: RegistryMatcher,
+  forType: string,
+  discriminator: string | undefined,
+  tyParam: string,
+  tyNode: TypeNode
+): string {
   if (!Node.isTypeLiteral(tyNode)) {
     throw new Error(`Every member of the union type "${forType}" must be a TypeLiteral`)
   }
@@ -111,7 +131,9 @@ function handleTypeNode (matcher: RegistryMatcher, forType: string, discriminato
 
     if (discriminator != null && memberName === discriminator) {
       if (!Node.isLiteralTypeNode(memberValue)) {
-        throw new Error(`Expected discriminator "${discriminator}" to be a LiteralType; got ${memberValue.getKindName()}`)
+        throw new Error(
+          `Expected discriminator "${discriminator}" to be a LiteralType; got ${memberValue.getKindName()}`
+        )
       }
       discriminatorValue = memberValue.getText()
       continue

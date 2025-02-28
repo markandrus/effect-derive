@@ -2,7 +2,5 @@
   "compilerOptions": {
     "allowImportingTsExtensions": true
   },
-  "references": [
-    { "path": ".." }
-  ]
+  "references": [{ "path": ".." }]
 }

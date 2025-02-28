@@ -1,25 +1,32 @@
 import { Node, type TypeAliasDeclaration, type TypeNode } from 'ts-morph'
 
 import { OutFile } from '../util/OutFile.ts'
-import { type Registries } from '../util/Registry.ts'
+import type { Registries } from '../util/Registry.ts'
 import deriveCovariant from './Covariant.ts'
 import deriveFoldable from './Foldable.ts'
 import deriveTraversable from './Traversable.ts'
 import deriveTypeLambda from './TypeLambda.ts'
 
-export default function (inFilePath: string, forType: string, discriminator: string | undefined, registries: Registries, node: TypeAliasDeclaration, extrasToDerive: Set<string>): OutFile {
+export default function (
+  inFilePath: string,
+  forType: string,
+  discriminator: string | undefined,
+  registries: Registries,
+  node: TypeAliasDeclaration,
+  extrasToDerive: Set<string>
+): OutFile {
   const outFile = new OutFile()
 
   const tyParams = node.getTypeParameters()
   if (tyParams.length > 2) {
-    throw new Error('At most 2 type parameters are supported when deriving baase functor, due to limitations in effect\'s HKT encoding')
+    throw new Error(
+      "At most 2 type parameters are supported when deriving baase functor, due to limitations in effect's HKT encoding"
+    )
   }
 
   const tA = tyParams.length > 0 ? 'A' : 'never'
   const tE = tyParams.length > 1 ? 'E' : 'never'
-  const freeTyParams = tA !== 'never' || tE !== 'never'
-    ? `<${tE !== 'never' ? `${tE}, ` : ''}${tA}>`
-    : ''
+  const freeTyParams = tA !== 'never' || tE !== 'never' ? `<${tE !== 'never' ? `${tE}, ` : ''}${tA}>` : ''
 
   const tyParamsSet = new Set(tyParams.map(tyParam => tyParam.getText()))
   let newTyParamName = 'X'
@@ -67,9 +74,7 @@ export default function (inFilePath: string, forType: string, discriminator: str
   // TODO(mroberts): We should publish these, so that we don't have to use relative
   // paths, which won't work in other projects.
   if (extrasToDerive.has('Recursive')) {
-    outFile
-      .addLocalImport('../typeclass/Recursive.ts', 'Recursive', 'R', true)
-      .addDeclarations(`\
+    outFile.addLocalImport('../typeclass/Recursive.ts', 'Recursive', 'R', true).addDeclarations(`\
 export const Recursive: ${freeTyParams !== '' ? `${freeTyParams}() => ` : ''}R<${forType}TypeLambda, ${forType}FTypeLambda, never, never, ${tE}, ${tA}, never, ${tE}, ${tA}> = ${freeTyParams !== '' ? '() => (' : ''}{
   F: Covariant,
   project: t => t
@@ -79,9 +84,7 @@ export const Recursive: ${freeTyParams !== '' ? `${freeTyParams}() => ` : ''}R<$
   }
 
   if (extrasToDerive.has('Corecursive')) {
-    outFile
-      .addLocalImport('../typeclass/Corecursive.ts', 'Corecursive', 'C', true)
-      .addDeclarations(`\
+    outFile.addLocalImport('../typeclass/Corecursive.ts', 'Corecursive', 'C', true).addDeclarations(`\
 export const Corecursive: ${freeTyParams !== '' ? `${freeTyParams}() => ` : ''}C<${forType}TypeLambda, ${forType}FTypeLambda, never, never, ${tE}, ${tA}, never, ${tE}, ${tA}> = ${freeTyParams !== '' ? '() => (' : ''}{
   F: Covariant,
   embed: t => t
@@ -93,13 +96,13 @@ export const Corecursive: ${freeTyParams !== '' ? `${freeTyParams}() => ` : ''}C
   return outFile
 }
 
-function handleTypeNodes (forType: string, tyParam: string, tyNodes: TypeNode[]): void {
+function handleTypeNodes(forType: string, tyParam: string, tyNodes: TypeNode[]): void {
   for (const tyNode of tyNodes) {
     handleTypeNode(forType, tyParam, tyNode)
   }
 }
 
-function handleTypeNode (forType: string, tyParam: string, tyNode: TypeNode): void {
+function handleTypeNode(forType: string, tyParam: string, tyNode: TypeNode): void {
   if (!Node.isTypeLiteral(tyNode)) {
     throw new Error(`Every member of the union type "${forType}" must be a TypeLiteral`)
   }

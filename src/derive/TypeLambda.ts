@@ -1,14 +1,21 @@
-import { type TypeAliasDeclaration } from 'ts-morph'
+import type { TypeAliasDeclaration } from 'ts-morph'
 
 import { OutFile } from '../util/OutFile.ts'
-import { type Registry } from '../util/Registry.ts'
+import type { Registry } from '../util/Registry.ts'
 
-export default function (inFilePath: string | undefined, forType: string, registry: Registry, node: TypeAliasDeclaration): OutFile {
+export default function (
+  inFilePath: string | undefined,
+  forType: string,
+  registry: Registry,
+  node: TypeAliasDeclaration
+): OutFile {
   const outFile = new OutFile()
 
   const tyParams = node.getTypeParameters()
   if (tyParams.length > 3) {
-    throw new Error('At most 3 type parameters are supported when deriving TypeLambda, due to limitations in effect\'s HKT encoding')
+    throw new Error(
+      "At most 3 type parameters are supported when deriving TypeLambda, due to limitations in effect's HKT encoding"
+    )
   }
 
   // In Haskell-style, we take the rightmost type parameter to be the "hole".
@@ -26,8 +33,7 @@ export default function (inFilePath: string | undefined, forType: string, regist
     }
   }
 
-  outFile
-    .addPackageImport('effect/HKT', 'TypeLambda', true)
+  outFile.addPackageImport('effect/HKT', 'TypeLambda', true)
 
   if (inFilePath != null) outFile.addLocalImport(inFilePath, forType, true)
 

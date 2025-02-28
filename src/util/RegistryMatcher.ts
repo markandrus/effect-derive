@@ -1,11 +1,11 @@
 import { Node, SyntaxKind, type TypeNode } from 'ts-morph'
 
-import { type Registry } from './Registry.ts'
+import type { Registry } from './Registry.ts'
 
 export type RegistryMatcher = (holeName: string, tyNode: TypeNode) => string[] | undefined
 
-export function createRegistryMatcher (registry: Registry): RegistryMatcher {
-  return function registryMatcher (holeName, tyNode): string[] | undefined {
+export function createRegistryMatcher(registry: Registry): RegistryMatcher {
+  return function registryMatcher(holeName, tyNode): string[] | undefined {
     switch (tyNode.getKind()) {
       case SyntaxKind.TypeReference: {
         const tyRefNode = tyNode.asKindOrThrow(SyntaxKind.TypeReference)

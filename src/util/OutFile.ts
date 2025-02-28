@@ -2,17 +2,17 @@ export type IsTypeImport = boolean
 
 export class OutFile {
   readonly packages = new Set<string>()
-  readonly packageAsteriskImports = new Map<string, Map<string, IsTypeImport>>
-  readonly packageDefaultImports = new Map<string, Map<string, IsTypeImport>>
-  readonly packageImports = new Map<string, Map<string, [alias: string | undefined, IsTypeImport]>>
+  readonly packageAsteriskImports = new Map<string, Map<string, IsTypeImport>>()
+  readonly packageDefaultImports = new Map<string, Map<string, IsTypeImport>>()
+  readonly packageImports = new Map<string, Map<string, [alias: string | undefined, IsTypeImport]>>()
 
   readonly locals = new Set<string>()
-  readonly localDefaultImports = new Map<string, Map<string, IsTypeImport>>
-  readonly localImports = new Map<string, Map<string, [alias: string | undefined, IsTypeImport]>>
+  readonly localDefaultImports = new Map<string, Map<string, IsTypeImport>>()
+  readonly localImports = new Map<string, Map<string, [alias: string | undefined, IsTypeImport]>>()
 
   declarations = ''
 
-  addPackageAsteriskImport (module: string, alias: string, isTypeImport: boolean = false): this {
+  addPackageAsteriskImport(module: string, alias: string, isTypeImport = false): this {
     this.packages.add(module)
     const imports = this.packageAsteriskImports.get(module) ?? new Map()
     this.packageAsteriskImports.set(module, imports)
@@ -21,7 +21,7 @@ export class OutFile {
     return this
   }
 
-  addPackageDefaultImport (module: string, alias: string, isTypeImport: boolean = false): this {
+  addPackageDefaultImport(module: string, alias: string, isTypeImport = false): this {
     this.packages.add(module)
     const imports = this.packageDefaultImports.get(module) ?? new Map()
     this.packageDefaultImports.set(module, imports)
@@ -30,11 +30,16 @@ export class OutFile {
     return this
   }
 
-  addPackageImport (module: string, imported: string, isTypeImport?: boolean): this
-  addPackageImport (module: string, imported: string, alias?: string, isTypeImport?: boolean): this
-  addPackageImport (module: string, imported: string, aliasOrIsTypeImport?: string | boolean, isTypeImport?: boolean): this {
+  addPackageImport(module: string, imported: string, isTypeImport?: boolean): this
+  addPackageImport(module: string, imported: string, alias?: string, isTypeImport?: boolean): this
+  addPackageImport(
+    module: string,
+    imported: string,
+    aliasOrIsTypeImport?: string | boolean,
+    isTypeImport?: boolean
+  ): this {
     const alias = typeof aliasOrIsTypeImport === 'string' ? aliasOrIsTypeImport : undefined
-    isTypeImport = typeof aliasOrIsTypeImport === 'boolean' ? aliasOrIsTypeImport : isTypeImport ?? false
+    isTypeImport = typeof aliasOrIsTypeImport === 'boolean' ? aliasOrIsTypeImport : (isTypeImport ?? false)
 
     this.packages.add(module)
     const imports = this.packageImports.get(module) ?? new Map<string, [alias: string | undefined, IsTypeImport]>()
@@ -49,7 +54,7 @@ export class OutFile {
     return this
   }
 
-  addLocalDefaultImport (module: string, alias: string, isTypeImport: boolean = false): this {
+  addLocalDefaultImport(module: string, alias: string, isTypeImport = false): this {
     this.locals.add(module)
     const imports = this.localDefaultImports.get(module) ?? new Map()
     this.localDefaultImports.set(module, imports)
@@ -58,11 +63,16 @@ export class OutFile {
     return this
   }
 
-  addLocalImport (module: string, imported: string, isTypeImport?: boolean): this
-  addLocalImport (module: string, imported: string, alias?: string, isTypeImport?: boolean): this
-  addLocalImport (module: string, imported: string, aliasOrIsTypeImport?: string | boolean, isTypeImport?: boolean): this {
+  addLocalImport(module: string, imported: string, isTypeImport?: boolean): this
+  addLocalImport(module: string, imported: string, alias?: string, isTypeImport?: boolean): this
+  addLocalImport(
+    module: string,
+    imported: string,
+    aliasOrIsTypeImport?: string | boolean,
+    isTypeImport?: boolean
+  ): this {
     const alias = typeof aliasOrIsTypeImport === 'string' ? aliasOrIsTypeImport : undefined
-    isTypeImport = typeof aliasOrIsTypeImport === 'boolean' ? aliasOrIsTypeImport : isTypeImport ?? false
+    isTypeImport = typeof aliasOrIsTypeImport === 'boolean' ? aliasOrIsTypeImport : (isTypeImport ?? false)
 
     this.locals.add(module)
     const imports = this.localImports.get(module) ?? new Map<string, [alias: string | undefined, IsTypeImport]>()
@@ -77,12 +87,12 @@ export class OutFile {
     return this
   }
 
-  addDeclarations (declarations: string): this {
+  addDeclarations(declarations: string): this {
     this.declarations += declarations
     return this
   }
 
-  merge (other: OutFile): this {
+  merge(other: OutFile): this {
     for (const [module, imports] of other.packageAsteriskImports) {
       for (const [alias, isTypeImport] of imports) {
         this.addPackageAsteriskImport(module, alias, isTypeImport)
@@ -118,7 +128,7 @@ export class OutFile {
     return this
   }
 
-  toString (): string {
+  toString(): string {
     let out = ''
 
     const packages = Array.from(this.packages).sort()
@@ -137,11 +147,11 @@ export class OutFile {
       if (imports != null && imports.size > 0) {
         out += 'import { '
 
-        let i = 0;
+        let i = 0
         for (const [imported, [alias, isTypeImport]] of imports) {
           out += `${i++ === 0 ? '' : ', '}${isTypeImport ? 'type ' : ''}${imported}${alias == null ? '' : ` as ${alias}`}`
         }
-  
+
         out += ` } from "${module}"\n`
       }
     }
@@ -159,11 +169,11 @@ export class OutFile {
       if (imports != null && imports.size > 0) {
         out += 'import { '
 
-        let i = 0;
+        let i = 0
         for (const [imported, [alias, isTypeImport]] of imports) {
           out += `${i++ === 0 ? '' : ', '}${isTypeImport ? 'type ' : ''}${imported}${alias == null ? '' : ` as ${alias}`}`
         }
-  
+
         out += ` } from "${module}"\n`
       }
     }
@@ -172,4 +182,4 @@ export class OutFile {
 
     return out + this.declarations
   }
-} 
+}

@@ -1,6 +1,6 @@
 import { Project, SyntaxKind } from 'ts-morph'
 
-export function parseTypeWithHole (typ: string, expectHole: boolean): [name: string, holeIndex: number] {
+export function parseTypeWithHole(typ: string, expectHole: boolean): [name: string, holeIndex: number] {
   const srcFile = new Project().createSourceFile('index.ts', `type ${typ} = { x: ${typ} }`)
   const tyAlias = srcFile.getTypeAliases()[0]
   const tyNode = tyAlias

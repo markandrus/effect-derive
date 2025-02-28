@@ -1,12 +1,12 @@
 import * as assert from 'node:assert'
 import { suite, test } from 'node:test'
 
-import { type Peano } from '../src/example/Peano.ts'
+import type { Peano } from '../src/example/Peano.ts'
 import { Corecursive as PeanoCorecursive, Recursive as PeanoRecursive } from '../src/example/PeanoF.derived.ts'
 import { ana } from '../src/typeclass/Corecursive.ts'
 import { cata } from '../src/typeclass/Recursive.ts'
 
-function toNumber (peano: Peano): number {
+function toNumber(peano: Peano): number {
   return cata(PeanoRecursive)<number>(peanoF => {
     switch (peanoF.type) {
       case 'Z':
@@ -17,11 +17,9 @@ function toNumber (peano: Peano): number {
   })(peano)
 }
 
-function fromNumber (number: number): Peano {
+function fromNumber(number: number): Peano {
   return ana(PeanoCorecursive)<number>(number => {
-    return number <= 0
-      ? { type: 'Z' }
-      : { type: 'S', succ: number - 1 }
+    return number <= 0 ? { type: 'Z' } : { type: 'S', succ: number - 1 }
   })(number)
 }
 

@@ -23,7 +23,12 @@ const parseFoldableFlags = createInstanceFlagsParser('--foldable', 'Foldable', t
 const parseTraversableFlags = createInstanceFlagsParser('--traversable', 'Traversable', true, 'traverse')
 const parseTypeLambdaFlags = createInstanceFlagsParser('--type-lambda', 'TypeLambda', false, '', true)
 
-export function parseRegistryFlags (cwd: string, inFilePath: string, outFilePath: string, flags: RegistryFlags): [Registries, OutFile] {
+export function parseRegistryFlags(
+  cwd: string,
+  inFilePath: string,
+  outFilePath: string,
+  flags: RegistryFlags
+): [Registries, OutFile] {
   const outFile = new OutFile()
 
   const [covariant, outFile1] = parseCovariantFlags(cwd, inFilePath, outFilePath, flags.covariant)
@@ -41,7 +46,13 @@ export function parseRegistryFlags (cwd: string, inFilePath: string, outFilePath
   return [registries, outFile.merge(outFile1).merge(outFile2).merge(outFile3).merge(outFile4)]
 }
 
-function createInstanceFlagsParser (flagName: string, instance: String, expectHole: boolean, fn: string, typeOnly: boolean = false): (cwd: string, inFilePath: string, outFilePath: string, flags: string[]) => [Registry, OutFile] {
+function createInstanceFlagsParser(
+  flagName: string,
+  instance: string,
+  expectHole: boolean,
+  fn: string,
+  typeOnly = false
+): (cwd: string, inFilePath: string, outFilePath: string, flags: string[]) => [Registry, OutFile] {
   return (cwd, inFilePath, outFilePath, flags) => {
     const registry: Registry = new Map()
     const outFile = new OutFile()
@@ -51,7 +62,9 @@ function createInstanceFlagsParser (flagName: string, instance: String, expectHo
       if (parts.length < 2) {
         throw new Error(`Failed to parse ${flagName} flag: expected at least an import path and a type name`)
       } else if (parts.length > 3) {
-        throw new Error(`Failed to parse ${flagName} flag: expected at most an import path, an import name, and a type name`)
+        throw new Error(
+          `Failed to parse ${flagName} flag: expected at most an import path, an import name, and a type name`
+        )
       }
 
       let importPath: string = parts[0]

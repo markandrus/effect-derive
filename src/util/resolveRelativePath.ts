@@ -3,7 +3,7 @@ import * as path from 'node:path'
 
 const suffixes = ['.cjs', '.mjs', '.js', '.cts', '.mts', '.ts']
 
-export function resolveRelativePath (cwd: string, inFilePath: string, outFilePath: string, importPath: string): string {
+export function resolveRelativePath(cwd: string, inFilePath: string, outFilePath: string, importPath: string): string {
   let absPath: string | undefined
   for (let pathToTry of [outFilePath, inFilePath, cwd]) {
     pathToTry = path.resolve(path.join(pathToTry, importPath))

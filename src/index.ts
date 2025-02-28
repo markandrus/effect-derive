@@ -12,31 +12,32 @@ import deriveTraversable from './derive/Traversable.ts'
 import deriveTypeLambda from './derive/TypeLambda.ts'
 import { parseRegistryFlags } from './util/Registry.ts'
 
-export function main () {
-  const {
-    positionals,
-    values: flags
-  } = util.parseArgs({
+export function main() {
+  const { positionals, values: flags } = util.parseArgs({
     allowPositionals: true,
     options: {
       'for-type': { type: 'string' },
       discriminator: { type: 'string' },
       'in-file': { type: 'string' },
       'out-file': { type: 'string' },
-      'covariant': { type: 'string', multiple: true },
-      'foldable': { type: 'string', multiple: true },
-      'traversable': { type: 'string', multiple: true },
+      covariant: { type: 'string', multiple: true },
+      foldable: { type: 'string', multiple: true },
+      traversable: { type: 'string', multiple: true },
       'type-lambda': { type: 'string', multiple: true }
     }
   })
 
   const derivations = new Set(positionals)
   if (derivations.size === 0) {
-    throw new Error(`At least one positional argument is required ("Covariant", "BaseFunctor", "Foldable", "Traversable" or "TypeLambda")`)
+    throw new Error(
+      `At least one positional argument is required ("Covariant", "BaseFunctor", "Foldable", "Traversable" or "TypeLambda")`
+    )
   }
 
   if ((derivations.has('Recursive') || derivations.has('Corecursive')) && !derivations.has('BaseFunctor')) {
-    throw new Error('Deriving "Recursive" or "Corecursive" requires deriving "BaseFunctor"; ensure you pass the positional argument "BaseFunctor"')
+    throw new Error(
+      'Deriving "Recursive" or "Corecursive" requires deriving "BaseFunctor"; ensure you pass the positional argument "BaseFunctor"'
+    )
   }
 
   const extrasToDerive = new Set<string>()
@@ -69,7 +70,7 @@ export function main () {
     covariant: flags.covariant ?? [],
     foldable: flags.foldable ?? [],
     traversable: flags.traversable ?? [],
-    typeLambda: flags['type-lambda'] ?? [],
+    typeLambda: flags['type-lambda'] ?? []
   })
 
   const project = new Project()
@@ -108,7 +109,7 @@ export function main () {
 }
 
 if (import.meta.url.startsWith('file:')) {
-  const modulePath = url.fileURLToPath(import.meta.url);
+  const modulePath = url.fileURLToPath(import.meta.url)
   if (process.argv[1] === modulePath) {
     main()
   }

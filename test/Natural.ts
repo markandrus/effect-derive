@@ -1,21 +1,20 @@
 import * as assert from 'node:assert'
 import { suite, test } from 'node:test'
 
-import { type TypeLambda } from 'effect/HKT'
+import type { TypeLambda } from 'effect/HKT'
 
 import { Covariant as MaybeCovariant, type MaybeTypeLambda } from '../src/example/Maybe.derived.ts'
-import { histo, type Recursive } from '../src/typeclass/Recursive.ts'
+import { type Recursive, histo } from '../src/typeclass/Recursive.ts'
 
 interface NaturalTypeLambda extends TypeLambda {
   readonly type: number
 }
 
-const naturalRecursive: Recursive<NaturalTypeLambda, MaybeTypeLambda, never, never, never, never, never, never, never> = {
-  F: MaybeCovariant,
-  project: n => n === 0
-    ? { type: 'Nothing' }
-    : { type: 'Just', a: n - 1 }
-}
+const naturalRecursive: Recursive<NaturalTypeLambda, MaybeTypeLambda, never, never, never, never, never, never, never> =
+  {
+    F: MaybeCovariant,
+    project: n => (n === 0 ? { type: 'Nothing' } : { type: 'Just', a: n - 1 })
+  }
 
 function fib(number: number): number {
   return histo(naturalRecursive)<number>(maybe => {

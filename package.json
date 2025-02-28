@@ -14,6 +14,8 @@
   },
   "scripts": {
     "build": "rm -rf lib && tsc",
+    "check": "biome check",
+    "fix": "biome check --fix",
     "generate:Complex": "node src/index.ts Covariant Foldable Traversable --for-type Complex --discriminator type --in-file src/example/Complex.ts --out-file src/example/Complex.derived.ts --covariant './src/example/Sum.derived#Covariant#Sum<A, _>' --covariant './src/example/Product.derived#Covariant#Product<A, _>' --covariant '@effect/typeclass/data/Array#Covariant#ReadonlyArray<_>' --foldable './src/example/Sum.derived#Foldable#Sum<A, _>' --foldable './src/example/Product.derived#Foldable#Product<A, _>' --foldable '@effect/typeclass/data/Array#Foldable#ReadonlyArray<_>' --traversable './src/example/Sum.derived#Traversable#Sum<A, _>' --traversable './src/example/Product.derived#Traversable#Product<A, _>' --traversable '@effect/typeclass/data/Array#Traversable#ReadonlyArray<_>'",
     "generate:List": "node src/index.ts Covariant Foldable Traversable --for-type List --discriminator type --in-file src/example/List.ts --out-file src/example/List.derived.ts",
     "generate:ListF": "node src/index.ts BaseFunctor Recursive Corecursive --for-type List --discriminator type --in-file src/example/List.ts --out-file src/example/ListF.derived.ts --type-lambda './src/example/List.derived#ListTypeLambda#List'",
@@ -45,6 +47,7 @@
     "ts-morph": "^24.0.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@tsconfig/node22": "^22.0.0",
     "@types/node": "^22.13.5",
     "typescript": "5.8.0-beta"
