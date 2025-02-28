@@ -3,8 +3,8 @@ import { suite, test } from 'node:test'
 
 import { type TypeLambda } from 'effect/HKT'
 
-import { type Peano } from '../src/examples/Peano'
-import { Corecursive as PeanoCorecursive, Recursive as PeanoRecursive } from '../src/examples/PeanoF.derived'
+import { type Peano } from '../src/example/Peano'
+import { Corecursive as PeanoCorecursive, Recursive as PeanoRecursive } from '../src/example/PeanoF.derived'
 import { ana } from '../src/typeclass/Corecursive'
 import { cata } from '../src/typeclass/Recursive'
 

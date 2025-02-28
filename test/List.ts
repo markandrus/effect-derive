@@ -1,9 +1,9 @@
 import * as assert from 'node:assert'
 import { suite, test } from 'node:test'
 
-import { type List } from '../src/examples/List'
-import { Foldable as ListFoldable } from '../src/examples/List.derived'
-import { Corecursive as ListCorecursive, Recursive as ListRecursive } from '../src/examples/ListF.derived'
+import { type List } from '../src/example/List'
+import { Foldable as ListFoldable } from '../src/example/List.derived'
+import { Corecursive as ListCorecursive, Recursive as ListRecursive } from '../src/example/ListF.derived'
 import { ana } from '../src/typeclass/Corecursive'
 import { cata } from '../src/typeclass/Recursive'
 
