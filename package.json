@@ -1,6 +1,6 @@
 {
   "name": "@markandrus/effect-derive",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Derive Covariant (Functor), Foldable, and Traversable instances, as well as base functors, for algebraic data types (ADTs)",
   "type": "module",
   "main": "lib/index.js",
