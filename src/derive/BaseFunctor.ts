@@ -1,13 +1,13 @@
 import { Node, type TypeAliasDeclaration, type TypeNode } from 'ts-morph'
 
-import { deriveCovariant } from './deriveCovariant'
-import { deriveFoldable } from './deriveFoldable'
-import { deriveTraversable } from './deriveTraversable'
-import { deriveTypeLambda } from './deriveTypeLambda'
-import { OutFile } from './OutFile'
-import { type Registries } from './Registry'
+import { OutFile } from '../OutFile'
+import { type Registries } from '../Registry'
+import deriveCovariant from './Covariant'
+import deriveFoldable from './Foldable'
+import deriveTraversable from './Traversable'
+import deriveTypeLambda from './TypeLambda'
 
-export function deriveBaseFunctor (inFilePath: string, forType: string, discriminator: string | undefined, registries: Registries, node: TypeAliasDeclaration, extrasToDerive: Set<string>): OutFile {
+export default function (inFilePath: string, forType: string, discriminator: string | undefined, registries: Registries, node: TypeAliasDeclaration, extrasToDerive: Set<string>): OutFile {
   const outFile = new OutFile()
 
   const tyParams = node.getTypeParameters()

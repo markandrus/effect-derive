@@ -1,28 +1,28 @@
-import { Node, type TypeNode, type TypeAliasDeclaration } from 'ts-morph'
+import { Node, type TypeAliasDeclaration, type TypeNode } from 'ts-morph'
 
-import { deriveTypeLambda } from './deriveTypeLambda'
-import { OutFile } from './OutFile'
-import { type Registries } from './Registry'
-import { createRegistryMatcher, RegistryMatcher } from './RegistryMatcher'
+import { OutFile } from '../OutFile'
+import { type Registries } from '../Registry'
+import { createRegistryMatcher, type RegistryMatcher } from '../RegistryMatcher'
+import deriveTypeLambda from './TypeLambda'
 
 const tyParamPlaceholders = ['C', 'D']
 
-export function deriveFoldable (inFilePath: string | undefined, forType: string, discriminator: string | undefined, registries: Registries, node: TypeAliasDeclaration): OutFile {
+export default function (inFilePath: string | undefined, forType: string, discriminator: string | undefined, registries: Registries, node: TypeAliasDeclaration): OutFile {
   const outFile = new OutFile()
 
   const tyParams = node.getTypeParameters()
   if (tyParams.length < 1) {
-    throw new Error('At least one type parameter is required to derive Foldable')
+    throw new Error('At least one type parameter is required to derive Covariant')
   } else if (tyParams.length > 3) {
-    throw new Error('At most 3 type parameters are supported when deriving Foldable, due to limitations in effect\'s HKT encoding')
+    throw new Error('At most 3 type parameters are supported when deriving Covariant, due to limitations in effect\'s HKT encoding')
   }
 
   // In Haskell-style, we take the rightmost type parameter to be the "hole".
   const holeIndex = tyParams.length - 1
   const tyParam = tyParams[holeIndex]
-  registries.foldable.set(forType, [holeIndex, 'reduce'])
+  registries.covariant.set(forType, [holeIndex, 'map'])
 
-  const matcher = createRegistryMatcher(registries.foldable)
+  const matcher = createRegistryMatcher(registries.covariant)
 
   let freeTyParams = ''
   for (let i = tyParams.length - 2; i >= 0; i--) {
@@ -45,7 +45,7 @@ export function deriveFoldable (inFilePath: string | undefined, forType: string,
   const switchStmt = handleTypeNodes(matcher, forType, discriminator, tyParam.getName(), tyNodes)
 
   outFile
-    .addPackageAsteriskImport('@effect/typeclass/Foldable', 'foldable')
+    .addPackageAsteriskImport('@effect/typeclass/Covariant', 'covariant')
     .addPackageImport('effect/Function', 'dual')
 
   if (!registries.typeLambda.has(forType)) {
@@ -54,15 +54,22 @@ export function deriveFoldable (inFilePath: string | undefined, forType: string,
 
   if (inFilePath != null) outFile.addLocalImport(inFilePath, forType, true)
 
-  // TODO(mroberts): Maybe OutFile needs to track which type lambdas have been declared, too?
   return outFile.addDeclarations(`\
-export const Foldable: foldable.Foldable<${forType}TypeLambda> = {
-  reduce: dual(
-    3,
-    function reduce<${freeTyParamsPrefix}A, B>(self: ${forType}<${freeTyParamsPrefix}A>, b: B, f: (b: B, a: A) => B): B {
+export const map: {
+  <A, B>(f: (a: A) => B): ${freeTyParams}(self: ${forType}<${freeTyParamsPrefix}A>) => ${forType}<${freeTyParamsPrefix}B>
+  <${freeTyParamsPrefix}A, B>(self: ${forType}<${freeTyParamsPrefix}A>, f: (a: A) => B): ${forType}<${freeTyParamsPrefix}B>
+} = dual(
+  2,
+  <${freeTyParamsPrefix}A, B>(self: ${forType}<${freeTyParamsPrefix}A>, f: (a: A) => B): ${forType}<${freeTyParamsPrefix}B> => {
 ${switchStmt}
-    }
-  )
+  }
+)
+
+const imap = covariant.imap<${forType}TypeLambda>(map)
+
+export const Covariant: covariant.Covariant<${forType}TypeLambda> = {
+  imap,
+  map
 }
 
 `)
@@ -80,10 +87,10 @@ function handleTypeNodes (matcher: RegistryMatcher, forType: string, discriminat
   }
 
   return `\
-      switch (self[${JSON.stringify(discriminator)}]) {
-${cases}        default:
-          throw new Error(\`Unknown tag "\${self[${JSON.stringify(discriminator)}]}"\`)
-      }`
+    switch (self[${JSON.stringify(discriminator)}]) {
+${cases}      default:
+        throw new Error(\`Unknown tag "\${self[${JSON.stringify(discriminator)}]}"\`)
+    }`
 }
 
 function handleTypeNode (matcher: RegistryMatcher, forType: string, discriminator: string | undefined, tyParam: string, tyNode: TypeNode): string {
@@ -92,7 +99,7 @@ function handleTypeNode (matcher: RegistryMatcher, forType: string, discriminato
   }
 
   let discriminatorValue: string | undefined
-  let updates = 'b'
+  let updates = ''
 
   for (const member of tyNode.getMembers()) {
     if (!Node.isPropertySignature(member)) {
@@ -110,29 +117,24 @@ function handleTypeNode (matcher: RegistryMatcher, forType: string, discriminato
       continue
     }
 
-    const reduceFunctions = matcher(tyParam, memberValue)
-    if (reduceFunctions == null) continue
+    const mapFunctions = matcher(tyParam, memberValue)
+    if (mapFunctions == null) continue
 
-    if (reduceFunctions.length === 0) {
-      updates = `f(${updates}, self[${JSON.stringify(memberName)}])`
-      continue
-    }
+    updates += `, ${JSON.stringify(memberName)}: `
 
-    if (reduceFunctions.length === 1) {
-      updates = `${reduceFunctions[0]}(self[${JSON.stringify(memberName)}], ${updates}, f)`
+    if (mapFunctions.length === 0) {
+      updates += `f(self[${JSON.stringify(memberName)}])`
       continue
     }
 
     let i = 0
     let suffix = ''
-    for (const reduceFunction of reduceFunctions) {
+    for (const mapFunction of mapFunctions) {
       if (i++ === 0) {
-        updates = `${reduceFunction}(self[${JSON.stringify(memberName)}], ${updates}, (b, t) => `
-        suffix += ')'
-      } else if (i === reduceFunctions.length) {
-        updates += `${reduceFunction}(t, b, f)`
+        updates += `${mapFunction}(self[${JSON.stringify(memberName)}], `
+        suffix += 'f)'
       } else {
-        updates += `${reduceFunction}(t, b, (b, t) => `
+        updates += `_ => ${mapFunction}(_, `
         suffix += ')'
       }
     }
@@ -144,13 +146,15 @@ function handleTypeNode (matcher: RegistryMatcher, forType: string, discriminato
     throw new Error(`Missing a discriminator "${discriminator}"`)
   }
 
+  updates = updates === '' ? 'self' : `{ ...self${updates} }`
+
   if (discriminator == null) {
     return `\
-      return ${updates}`
+    return ${updates}`
   }
 
   return `\
-        case ${discriminatorValue}:
-          return ${updates}
+      case ${discriminatorValue}:
+        return ${updates}
 `
 }

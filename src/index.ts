@@ -5,12 +5,12 @@ import * as util from 'node:util'
 
 import { Project } from 'ts-morph'
 
-import { deriveBaseFunctor } from './deriveBaseFunctor'
-import { deriveCovariant } from './deriveCovariant'
+import deriveBaseFunctor from './derive/BaseFunctor'
+import deriveCovariant from './derive/Covariant'
+import deriveFoldable from './derive/Foldable'
+import deriveTraversable from './derive/Traversable'
+import deriveTypeLambda from './derive/TypeLambda'
 import { parseRegistryFlags } from './Registry'
-import { deriveFoldable } from './deriveFoldable'
-import { deriveTraversable } from './deriveTraversable'
-import { deriveTypeLambda } from './deriveTypeLambda'
 
 export function main () {
   const {

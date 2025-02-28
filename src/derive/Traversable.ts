@@ -1,13 +1,13 @@
 import { Node, type TypeNode, type TypeAliasDeclaration } from 'ts-morph'
 
-import { deriveTypeLambda } from './deriveTypeLambda'
-import { OutFile } from './OutFile'
-import { type Registries } from './Registry'
-import { createRegistryMatcher, RegistryMatcher } from './RegistryMatcher'
+import { OutFile } from '../OutFile'
+import { type Registries } from '../Registry'
+import { createRegistryMatcher, RegistryMatcher } from '../RegistryMatcher'
+import deriveTypeLambda from './TypeLambda'
 
 const tyParamPlaceholders = ['C', 'D']
 
-export function deriveTraversable (inFilePath: string | undefined, forType: string, discriminator: string | undefined, registries: Registries, node: TypeAliasDeclaration): OutFile {
+export default function (inFilePath: string | undefined, forType: string, discriminator: string | undefined, registries: Registries, node: TypeAliasDeclaration): OutFile {
   const outFile = new OutFile()
 
   const tyParams = node.getTypeParameters()

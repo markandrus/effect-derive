@@ -1,9 +1,9 @@
 import { type TypeAliasDeclaration } from 'ts-morph'
 
-import { OutFile } from './OutFile'
-import { type Registry } from './Registry'
+import { OutFile } from '../OutFile'
+import { type Registry } from '../Registry'
 
-export function deriveTypeLambda (inFilePath: string | undefined, forType: string, registry: Registry, node: TypeAliasDeclaration): OutFile {
+export default function (inFilePath: string | undefined, forType: string, registry: Registry, node: TypeAliasDeclaration): OutFile {
   const outFile = new OutFile()
 
   const tyParams = node.getTypeParameters()
