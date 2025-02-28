@@ -1,13 +1,13 @@
 import * as assert from 'node:assert'
 import { suite, test } from 'node:test'
 
-import { ana } from '../src/Corecursive'
 import { type List } from '../src/examples/List'
 import { Foldable as ListFoldable } from '../src/examples/List.derived'
 import { Corecursive as ListCorecursive, Recursive as ListRecursive } from '../src/examples/ListF.derived'
-import { cata } from '../src/Recursive'
+import { ana } from '../src/typeclass/Corecursive'
+import { cata } from '../src/typeclass/Recursive'
 
-const toArrayReduce = <A>(list: List<A>): A[] => ListFoldable.reduce<A, A[]>([], (as, a) => as.concat([a]))(list) 
+const toArrayReduce = <A>(list: List<A>): A[] => ListFoldable.reduce<A, A[]>([], (as, a) => as.concat([a]))(list)
 
 const toArrayCata = <A>(list: List<A>): A[] => cata(ListRecursive<A>())<A[]>(listF => {
   switch (listF.type) {

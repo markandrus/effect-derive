@@ -6,8 +6,8 @@ import * as traversable from "@effect/typeclass/Traversable"
 import { dual } from "effect/Function"
 import { type TypeLambda, type Kind } from "effect/HKT"
 
-import { type Corecursive as C } from "../Corecursive"
-import { type Recursive as R } from "../Recursive"
+import { type Corecursive as C } from "../typeclass/Corecursive"
+import { type Recursive as R } from "../typeclass/Recursive"
 import { type Peano } from "./Peano"
 
 export interface PeanoTypeLambda extends TypeLambda {

@@ -56,7 +56,7 @@ export function deriveBaseFunctor (inFilePath: string, forType: string, discrimi
     .merge(deriveTypeLambda(undefined, forType + 'F', registries.typeLambda, node))
     .merge(deriveCovariant(undefined, forType + 'F', discriminator, registries, node))
 
-  if (extrasToDerive.has('Foldable')) { 
+  if (extrasToDerive.has('Foldable')) {
     outFile.merge(deriveFoldable(undefined, forType + 'F', discriminator, registries, node))
   }
 
@@ -66,13 +66,9 @@ export function deriveBaseFunctor (inFilePath: string, forType: string, discrimi
 
   // TODO(mroberts): We should publish these, so that we don't have to use relative
   // paths, which won't work in other projects.
-  outFile
-    .addLocalImport('../Recursive', 'Recursive', 'R', true)  
-    .addLocalImport('../Corecursive', 'Corecursive', 'C', true)  
-  
   if (extrasToDerive.has('Recursive')) {
     outFile
-      .addLocalImport('../Recursive', 'Recursive', 'R', true)  
+      .addLocalImport('../typeclass/Recursive', 'Recursive', 'R', true)
       .addDeclarations(`\
 export const Recursive: ${freeTyParams !== '' ? `${freeTyParams}() => ` : ''}R<${forType}TypeLambda, ${forType}FTypeLambda, never, never, ${tE}, ${tA}, never, ${tE}, ${tA}> = ${freeTyParams !== '' ? '() => (' : ''}{
   F: Covariant,
@@ -84,7 +80,7 @@ export const Recursive: ${freeTyParams !== '' ? `${freeTyParams}() => ` : ''}R<$
 
   if (extrasToDerive.has('Corecursive')) {
     outFile
-      .addLocalImport('../Corecursive', 'Corecursive', 'C', true)  
+      .addLocalImport('../typeclass/Corecursive', 'Corecursive', 'C', true)
       .addDeclarations(`\
 export const Corecursive: ${freeTyParams !== '' ? `${freeTyParams}() => ` : ''}C<${forType}TypeLambda, ${forType}FTypeLambda, never, never, ${tE}, ${tA}, never, ${tE}, ${tA}> = ${freeTyParams !== '' ? '() => (' : ''}{
   F: Covariant,
@@ -94,7 +90,7 @@ export const Corecursive: ${freeTyParams !== '' ? `${freeTyParams}() => ` : ''}C
 `)
   }
 
-  return outFile  
+  return outFile
 }
 
 function handleTypeNodes (forType: string, tyParam: string, tyNodes: TypeNode[]): void {

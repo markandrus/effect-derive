@@ -12,9 +12,6 @@ import { deriveFoldable } from './deriveFoldable'
 import { deriveTraversable } from './deriveTraversable'
 import { deriveTypeLambda } from './deriveTypeLambda'
 
-export * from './Corecursive'
-export * from './Recursive'
-
 export function main () {
   const {
     positionals,

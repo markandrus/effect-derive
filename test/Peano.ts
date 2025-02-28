@@ -3,10 +3,10 @@ import { suite, test } from 'node:test'
 
 import { type TypeLambda } from 'effect/HKT'
 
-import { ana, type Corecursive } from '../src/Corecursive'
 import { type Peano } from '../src/examples/Peano'
 import { Corecursive as PeanoCorecursive, Recursive as PeanoRecursive } from '../src/examples/PeanoF.derived'
-import { cata, type Recursive } from '../src/Recursive'
+import { ana } from '../src/typeclass/Corecursive'
+import { cata } from '../src/typeclass/Recursive'
 
 interface PeanoTypeLambda extends TypeLambda {
   readonly type: Peano
@@ -48,7 +48,7 @@ suite('Peano', () => {
   test('toNumber implemented using cata', () => {
     assert.deepStrictEqual(toNumber(peano), 3)
   })
-  
+
   test('fromNumber implemented using ana', () => {
     assert.deepStrictEqual(fromNumber(3), peano)
   })

@@ -4,7 +4,7 @@ import { suite, test } from 'node:test'
 import { type TypeLambda } from 'effect/HKT'
 
 import { Covariant as MaybeCovariant, type MaybeTypeLambda } from '../src/examples/Maybe.derived'
-import { histo, type Recursive } from '../src/Recursive'
+import { histo, type Recursive } from '../src/typeclass/Recursive'
 
 interface NaturalTypeLambda extends TypeLambda {
   readonly type: number
