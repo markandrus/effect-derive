@@ -1,5 +1,5 @@
-import { type Sum } from './Sum'
-import { type Product } from './Product'
+import { type Sum } from './Sum.ts'
+import { type Product } from './Product.ts'
 
 export type Complex<A>
   = { type: 'Complex1', complex1: Sum<number, Product<string, ReadonlyArray<Complex<A>>>> }

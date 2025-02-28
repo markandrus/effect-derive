@@ -16,13 +16,14 @@ export function resolveRelativePath (cwd: string, inFilePath: string, outFilePat
     for (const suffix of suffixes) {
       if (pathToTry.endsWith(suffix)) {
         pathToTry = pathToTry.slice(0, pathToTry.length - suffix.length)
+        break
       }
     }
 
     for (const suffix of suffixes) {
       const pathToTryWithSuffix = pathToTry + suffix
       if (fs.existsSync(pathToTryWithSuffix)) {
-        absPath = pathToTry
+        absPath = pathToTryWithSuffix
         break
       }
     }

@@ -1,8 +1,8 @@
 import { Node, SyntaxKind, type TypeNode } from 'ts-morph'
 
-import { type Registry } from './Registry'
+import { type Registry } from './Registry.ts'
 
-export type RegistryMatcher = (holeName: string, tyNode: TypeNode) => string[] | undefined  
+export type RegistryMatcher = (holeName: string, tyNode: TypeNode) => string[] | undefined
 
 export function createRegistryMatcher (registry: Registry): RegistryMatcher {
   return function registryMatcher (holeName, tyNode): string[] | undefined {

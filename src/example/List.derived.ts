@@ -6,7 +6,7 @@ import * as traversable from "@effect/typeclass/Traversable"
 import { dual } from "effect/Function"
 import { type TypeLambda, type Kind } from "effect/HKT"
 
-import { type List } from "./List"
+import { type List } from "./List.ts"
 
 export interface ListTypeLambda extends TypeLambda {
   readonly type: List<this["Target"]>

@@ -1,6 +1,7 @@
 import { type Covariant } from '@effect/typeclass/Covariant'
 import { type Kind, type TypeClass, type TypeLambda } from 'effect/HKT'
-import { Cofree, extract } from '../data/Cofree'
+
+import { type Cofree, extract } from '../data/Cofree.ts'
 
 export interface Recursive<T extends TypeLambda, F extends TypeLambda, TR, TO, TE, TA, FR, FO, FE> extends TypeClass<T> {
   readonly F: Covariant<F>

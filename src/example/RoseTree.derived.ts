@@ -7,7 +7,7 @@ import { Covariant as ReadonlyArrayCovariant, Foldable as ReadonlyArrayFoldable,
 import { dual } from "effect/Function"
 import { type TypeLambda, type Kind } from "effect/HKT"
 
-import { type RoseTree } from "./RoseTree"
+import { type RoseTree } from "./RoseTree.ts"
 
 export interface RoseTreeTypeLambda extends TypeLambda {
   readonly type: RoseTree<this["Target"]>

@@ -1,9 +1,9 @@
 import { Node, type TypeAliasDeclaration, type TypeNode } from 'ts-morph'
 
-import { OutFile } from '../OutFile'
-import { type Registries } from '../Registry'
-import { createRegistryMatcher, type RegistryMatcher } from '../RegistryMatcher'
-import deriveTypeLambda from './TypeLambda'
+import { OutFile } from '../util/OutFile.ts'
+import { type Registries } from '../util/Registry.ts'
+import { createRegistryMatcher, type RegistryMatcher } from '../util/RegistryMatcher.ts'
+import deriveTypeLambda from './TypeLambda.ts'
 
 const tyParamPlaceholders = ['C', 'D']
 

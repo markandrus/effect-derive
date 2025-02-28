@@ -6,7 +6,7 @@ import * as traversable from "@effect/typeclass/Traversable"
 import { dual } from "effect/Function"
 import { type TypeLambda, type Kind } from "effect/HKT"
 
-import { type Sum } from "./Sum"
+import { type Sum } from "./Sum.ts"
 
 export interface SumTypeLambda extends TypeLambda {
   readonly type: Sum<this["Out1"], this["Target"]>

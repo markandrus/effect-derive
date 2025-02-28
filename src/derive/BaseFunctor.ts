@@ -1,11 +1,11 @@
 import { Node, type TypeAliasDeclaration, type TypeNode } from 'ts-morph'
 
-import { OutFile } from '../OutFile'
-import { type Registries } from '../Registry'
-import deriveCovariant from './Covariant'
-import deriveFoldable from './Foldable'
-import deriveTraversable from './Traversable'
-import deriveTypeLambda from './TypeLambda'
+import { OutFile } from '../util/OutFile.ts'
+import { type Registries } from '../util/Registry.ts'
+import deriveCovariant from './Covariant.ts'
+import deriveFoldable from './Foldable.ts'
+import deriveTraversable from './Traversable.ts'
+import deriveTypeLambda from './TypeLambda.ts'
 
 export default function (inFilePath: string, forType: string, discriminator: string | undefined, registries: Registries, node: TypeAliasDeclaration, extrasToDerive: Set<string>): OutFile {
   const outFile = new OutFile()
@@ -68,7 +68,7 @@ export default function (inFilePath: string, forType: string, discriminator: str
   // paths, which won't work in other projects.
   if (extrasToDerive.has('Recursive')) {
     outFile
-      .addLocalImport('../typeclass/Recursive', 'Recursive', 'R', true)
+      .addLocalImport('../typeclass/Recursive.ts', 'Recursive', 'R', true)
       .addDeclarations(`\
 export const Recursive: ${freeTyParams !== '' ? `${freeTyParams}() => ` : ''}R<${forType}TypeLambda, ${forType}FTypeLambda, never, never, ${tE}, ${tA}, never, ${tE}, ${tA}> = ${freeTyParams !== '' ? '() => (' : ''}{
   F: Covariant,
@@ -80,7 +80,7 @@ export const Recursive: ${freeTyParams !== '' ? `${freeTyParams}() => ` : ''}R<$
 
   if (extrasToDerive.has('Corecursive')) {
     outFile
-      .addLocalImport('../typeclass/Corecursive', 'Corecursive', 'C', true)
+      .addLocalImport('../typeclass/Corecursive.ts', 'Corecursive', 'C', true)
       .addDeclarations(`\
 export const Corecursive: ${freeTyParams !== '' ? `${freeTyParams}() => ` : ''}C<${forType}TypeLambda, ${forType}FTypeLambda, never, never, ${tE}, ${tA}, never, ${tE}, ${tA}> = ${freeTyParams !== '' ? '() => (' : ''}{
   F: Covariant,

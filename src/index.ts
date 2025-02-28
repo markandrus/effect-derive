@@ -5,12 +5,12 @@ import * as util from 'node:util'
 
 import { Project } from 'ts-morph'
 
-import deriveBaseFunctor from './derive/BaseFunctor'
-import deriveCovariant from './derive/Covariant'
-import deriveFoldable from './derive/Foldable'
-import deriveTraversable from './derive/Traversable'
-import deriveTypeLambda from './derive/TypeLambda'
-import { parseRegistryFlags } from './Registry'
+import deriveBaseFunctor from './derive/BaseFunctor.ts'
+import deriveCovariant from './derive/Covariant.ts'
+import deriveFoldable from './derive/Foldable.ts'
+import deriveTraversable from './derive/Traversable.ts'
+import deriveTypeLambda from './derive/TypeLambda.ts'
+import { parseRegistryFlags } from './util/Registry.ts'
 
 export function main () {
   const {
@@ -75,7 +75,6 @@ export function main () {
   const project = new Project()
   const inFile = project.addSourceFileAtPath(inFilePath)
 
-  inFilePath = inFilePath.replace(/(\.d)?\.ts$/, '')
   inFilePath = './' + path.relative(path.dirname(outFilePath), inFilePath)
 
   const tyAliasDecl = inFile.getTypeAliasOrThrow(forType)

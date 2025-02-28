@@ -6,7 +6,7 @@ import * as traversable from "@effect/typeclass/Traversable"
 import { dual } from "effect/Function"
 import { type TypeLambda, type Kind } from "effect/HKT"
 
-import { type Maybe } from "./Maybe"
+import { type Maybe } from "./Maybe.ts"
 
 export interface MaybeTypeLambda extends TypeLambda {
   readonly type: Maybe<this["Target"]>

@@ -7,9 +7,9 @@ import { Covariant as ReadonlyArrayCovariant, Foldable as ReadonlyArrayFoldable,
 import { dual } from "effect/Function"
 import { type TypeLambda, type Kind } from "effect/HKT"
 
-import { type Complex } from "./Complex"
-import { Covariant as ProductCovariant, Foldable as ProductFoldable, Traversable as ProductTraversable } from "./Product.derived"
-import { Covariant as SumCovariant, Foldable as SumFoldable, Traversable as SumTraversable } from "./Sum.derived"
+import { type Complex } from "./Complex.ts"
+import { Covariant as ProductCovariant, Foldable as ProductFoldable, Traversable as ProductTraversable } from "./Product.derived.ts"
+import { Covariant as SumCovariant, Foldable as SumFoldable, Traversable as SumTraversable } from "./Sum.derived.ts"
 
 export interface ComplexTypeLambda extends TypeLambda {
   readonly type: Complex<this["Target"]>

@@ -1,7 +1,7 @@
 import { type TypeAliasDeclaration } from 'ts-morph'
 
-import { OutFile } from '../OutFile'
-import { type Registry } from '../Registry'
+import { OutFile } from '../util/OutFile.ts'
+import { type Registry } from '../util/Registry.ts'
 
 export default function (inFilePath: string | undefined, forType: string, registry: Registry, node: TypeAliasDeclaration): OutFile {
   const outFile = new OutFile()

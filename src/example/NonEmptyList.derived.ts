@@ -6,8 +6,8 @@ import * as traversable from "@effect/typeclass/Traversable"
 import { dual } from "effect/Function"
 import { type TypeLambda, type Kind } from "effect/HKT"
 
-import { Covariant as MaybeCovariant, Foldable as MaybeFoldable, Traversable as MaybeTraversable } from "./Maybe.derived"
-import { type NonEmptyList } from "./NonEmptyList"
+import { Covariant as MaybeCovariant, Foldable as MaybeFoldable, Traversable as MaybeTraversable } from "./Maybe.derived.ts"
+import { type NonEmptyList } from "./NonEmptyList.ts"
 
 export interface NonEmptyListTypeLambda extends TypeLambda {
   readonly type: NonEmptyList<this["Target"]>

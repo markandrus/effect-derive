@@ -14,17 +14,17 @@
   },
   "scripts": {
     "build": "rm -rf lib && tsc",
-    "generate:Complex": "tsx src/index.ts Covariant Foldable Traversable --for-type Complex --discriminator type --in-file src/example/Complex.ts --out-file src/example/Complex.derived.ts --covariant './src/example/Sum.derived#Covariant#Sum<A, _>' --covariant './src/example/Product.derived#Covariant#Product<A, _>' --covariant '@effect/typeclass/data/Array#Covariant#ReadonlyArray<_>' --foldable './src/example/Sum.derived#Foldable#Sum<A, _>' --foldable './src/example/Product.derived#Foldable#Product<A, _>' --foldable '@effect/typeclass/data/Array#Foldable#ReadonlyArray<_>' --traversable './src/example/Sum.derived#Traversable#Sum<A, _>' --traversable './src/example/Product.derived#Traversable#Product<A, _>' --traversable '@effect/typeclass/data/Array#Traversable#ReadonlyArray<_>'",
-    "generate:List": "tsx src/index.ts Covariant Foldable Traversable --for-type List --discriminator type --in-file src/example/List.ts --out-file src/example/List.derived.ts",
-    "generate:ListF": "tsx src/index.ts BaseFunctor Recursive Corecursive --for-type List --discriminator type --in-file src/example/List.ts --out-file src/example/ListF.derived.ts --type-lambda './src/example/List.derived#ListTypeLambda#List'",
-    "generate:Maybe": "tsx src/index.ts Covariant Foldable Traversable --for-type Maybe --discriminator type --in-file src/example/Maybe.ts --out-file src/example/Maybe.derived.ts",
-    "generate:NonEmptyList": "tsx src/index.ts Covariant Foldable Traversable --for-type NonEmptyList --in-file src/example/NonEmptyList.ts --out-file src/example/NonEmptyList.derived.ts --covariant './src/example/Maybe.derived#Covariant#Maybe<_>' --foldable './src/example/Maybe.derived#Foldable#Maybe<_>' --traversable './src/example/Maybe.derived#Traversable#Maybe<_>'",
-    "generate:PeanoF": "tsx src/index.ts BaseFunctor Foldable Traversable Recursive Corecursive --for-type Peano --discriminator type --in-file src/example/Peano.ts --out-file src/example/PeanoF.derived.ts",
-    "generate:Product": "tsx src/index.ts Covariant Foldable Traversable --for-type Product --in-file src/example/Product.ts --out-file src/example/Product.derived.ts",
-    "generate:RoseTree": "tsx src/index.ts Covariant Foldable Traversable --for-type RoseTree --in-file src/example/RoseTree.ts --out-file src/example/RoseTree.derived.ts --covariant '@effect/typeclass/data/Array#Covariant#ReadonlyArray<_>' --foldable '@effect/typeclass/data/Array#Foldable#ReadonlyArray<_>' --traversable '@effect/typeclass/data/Array#Traversable#ReadonlyArray<_>'",
-    "generate:Sum": "tsx src/index.ts Covariant Foldable Traversable --for-type Sum --discriminator type --in-file src/example/Sum.ts --out-file src/example/Sum.derived.ts",
+    "generate:Complex": "node src/index.ts Covariant Foldable Traversable --for-type Complex --discriminator type --in-file src/example/Complex.ts --out-file src/example/Complex.derived.ts --covariant './src/example/Sum.derived#Covariant#Sum<A, _>' --covariant './src/example/Product.derived#Covariant#Product<A, _>' --covariant '@effect/typeclass/data/Array#Covariant#ReadonlyArray<_>' --foldable './src/example/Sum.derived#Foldable#Sum<A, _>' --foldable './src/example/Product.derived#Foldable#Product<A, _>' --foldable '@effect/typeclass/data/Array#Foldable#ReadonlyArray<_>' --traversable './src/example/Sum.derived#Traversable#Sum<A, _>' --traversable './src/example/Product.derived#Traversable#Product<A, _>' --traversable '@effect/typeclass/data/Array#Traversable#ReadonlyArray<_>'",
+    "generate:List": "node src/index.ts Covariant Foldable Traversable --for-type List --discriminator type --in-file src/example/List.ts --out-file src/example/List.derived.ts",
+    "generate:ListF": "node src/index.ts BaseFunctor Recursive Corecursive --for-type List --discriminator type --in-file src/example/List.ts --out-file src/example/ListF.derived.ts --type-lambda './src/example/List.derived#ListTypeLambda#List'",
+    "generate:Maybe": "node src/index.ts Covariant Foldable Traversable --for-type Maybe --discriminator type --in-file src/example/Maybe.ts --out-file src/example/Maybe.derived.ts",
+    "generate:NonEmptyList": "node src/index.ts Covariant Foldable Traversable --for-type NonEmptyList --in-file src/example/NonEmptyList.ts --out-file src/example/NonEmptyList.derived.ts --covariant './src/example/Maybe.derived#Covariant#Maybe<_>' --foldable './src/example/Maybe.derived#Foldable#Maybe<_>' --traversable './src/example/Maybe.derived#Traversable#Maybe<_>'",
+    "generate:PeanoF": "node src/index.ts BaseFunctor Foldable Traversable Recursive Corecursive --for-type Peano --discriminator type --in-file src/example/Peano.ts --out-file src/example/PeanoF.derived.ts",
+    "generate:Product": "node src/index.ts Covariant Foldable Traversable --for-type Product --in-file src/example/Product.ts --out-file src/example/Product.derived.ts",
+    "generate:RoseTree": "node src/index.ts Covariant Foldable Traversable --for-type RoseTree --in-file src/example/RoseTree.ts --out-file src/example/RoseTree.derived.ts --covariant '@effect/typeclass/data/Array#Covariant#ReadonlyArray<_>' --foldable '@effect/typeclass/data/Array#Foldable#ReadonlyArray<_>' --traversable '@effect/typeclass/data/Array#Traversable#ReadonlyArray<_>'",
+    "generate:Sum": "node src/index.ts Covariant Foldable Traversable --for-type Sum --discriminator type --in-file src/example/Sum.ts --out-file src/example/Sum.derived.ts",
     "prepublish": "rm -rf lib && tsc",
-    "test": "tsx test/index.ts"
+    "test": "node test/index.ts"
   },
   "keywords": [
     "effect",
@@ -40,15 +40,14 @@
   "author": "Mark Roberts <markandrusroberts@gmail.com>",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "@effect/typeclass": "^0.29.15",
-    "effect": "^3.10.15",
+    "@effect/typeclass": "^0.29.19",
+    "effect": "^3.13.4",
     "ts-morph": "^24.0.0"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.0",
-    "@types/node": "^22.9.0",
-    "tsx": "^4.19.2",
-    "typescript": "^5.6.3"
+    "@types/node": "^22.13.5",
+    "typescript": "5.8.0-beta"
   },
   "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0"
 }
