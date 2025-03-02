@@ -1,8 +1,8 @@
 import * as assert from 'node:assert'
 import { suite, test } from 'node:test'
 
-import { Foldable as NonEmptyListFoldable } from '../src/example/NonEmptyList.derived.ts'
-import type { NonEmptyList } from '../src/example/NonEmptyList.ts'
+import { Foldable as NonEmptyListFoldable } from '../../example/NonEmptyList.derived.ts'
+import type { NonEmptyList } from '../../example/NonEmptyList.ts'
 
 const toArrayReduce = <A>(nonEmptyList: NonEmptyList<A>): A[] =>
   NonEmptyListFoldable.reduce<A, A[]>([], (as, a) => as.concat([a]))(nonEmptyList)

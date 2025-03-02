@@ -24,7 +24,7 @@ Usage
 Assume we have the following definition of a List:
 
 ```ts
-// src/example/List.ts
+// example/List.ts
 
 export type List<A>
   = { type: 'Nil' }
@@ -39,8 +39,8 @@ npx @markandrus/effect-derive \
   Covariant Foldable Traversable \
   --for-type List \
   --discriminator type \
-  --in-file src/example/List.ts \
-  --out-file src/example/List.derived.ts
+  --in-file example/List.ts \
+  --out-file example/List.derived.ts
 ```
 
 #### Registering additional type class instances
@@ -48,7 +48,7 @@ npx @markandrus/effect-derive \
 Assume we have the following definition of a RoseTree:
 
 ```ts
-// src/example/RoseTree.ts
+// example/RoseTree.ts
 
 export type RoseTree<A> = {
   rootLabel: A
@@ -64,8 +64,8 @@ npx @markandrus/effect-derive \
   Covariant Foldable Traversable \
   --for-type RoseTree \
   --discriminator type \
-  --in-file src/example/RoseTree.ts \
-  --out-file src/example/RoseTree.derived.ts \
+  --in-file example/RoseTree.ts \
+  --out-file example/RoseTree.derived.ts \
   --covariant '@effect/typeclass/data/Array#Covariant#ReadonlyArray<_>' \
   --foldable '@effect/typeclass/data/Array#Foldable#ReadonlyArray<_>' \
   --traversable '@effect/typeclass/data/Array#Traversable#ReadonlyArray<_>'
@@ -93,8 +93,8 @@ npx @markandrus/effect-derive \
   BaseFunctor Recursive Corecursive \
   --for-type List \
   --discriminator type \
-  --in-file src/example/List.ts \
-  --out-file src/example/ListF.derived.ts
+  --in-file example/List.ts \
+  --out-file example/ListF.derived.ts
 ```
 
 Note that Covariant is derived automatically with BaseFunctor, but you can also
@@ -107,7 +107,7 @@ Most of the commands will derive TypeLambda instances as necessary; however, if
 you already have a TypeLambda you want to reuse, you can register it:
 
 ```sh
---type-lambda './src/example/List.derived#ListTypeLambda#List'
+--type-lambda './example/List.derived#ListTypeLambda#List'
 ```
 
 Limitations

@@ -74,7 +74,7 @@ export default function (
   // TODO(mroberts): We should publish these, so that we don't have to use relative
   // paths, which won't work in other projects.
   if (extrasToDerive.has('Recursive')) {
-    outFile.addLocalImport('../typeclass/Recursive.ts', 'Recursive', 'R', true).addDeclarations(`\
+    outFile.addLocalImport('../src/typeclass/Recursive.ts', 'Recursive', 'R', true).addDeclarations(`\
 export const Recursive: ${freeTyParams !== '' ? `${freeTyParams}() => ` : ''}R<${forType}TypeLambda, ${forType}FTypeLambda, never, never, ${tE}, ${tA}, never, ${tE}, ${tA}> = ${freeTyParams !== '' ? '() => (' : ''}{
   F: Covariant,
   project: t => t
@@ -84,7 +84,7 @@ export const Recursive: ${freeTyParams !== '' ? `${freeTyParams}() => ` : ''}R<$
   }
 
   if (extrasToDerive.has('Corecursive')) {
-    outFile.addLocalImport('../typeclass/Corecursive.ts', 'Corecursive', 'C', true).addDeclarations(`\
+    outFile.addLocalImport('../src/typeclass/Corecursive.ts', 'Corecursive', 'C', true).addDeclarations(`\
 export const Corecursive: ${freeTyParams !== '' ? `${freeTyParams}() => ` : ''}C<${forType}TypeLambda, ${forType}FTypeLambda, never, never, ${tE}, ${tA}, never, ${tE}, ${tA}> = ${freeTyParams !== '' ? '() => (' : ''}{
   F: Covariant,
   embed: t => t

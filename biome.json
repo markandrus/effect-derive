@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["lib/**/*", "src/example/*.derived.ts"]
+    "ignore": ["lib/**/*", "example/**/*"]
   },
   "formatter": {
     "enabled": true,

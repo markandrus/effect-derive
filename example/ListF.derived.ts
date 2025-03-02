@@ -2,8 +2,8 @@ import * as covariant from "@effect/typeclass/Covariant"
 import { dual } from "effect/Function"
 import { type TypeLambda } from "effect/HKT"
 
-import { type Corecursive as C } from "../typeclass/Corecursive.ts"
-import { type Recursive as R } from "../typeclass/Recursive.ts"
+import { type Corecursive as C } from "../src/typeclass/Corecursive.ts"
+import { type Recursive as R } from "../src/typeclass/Recursive.ts"
 import { type ListTypeLambda as ListTypeLambda } from "./List.derived.ts"
 
 export type ListF<A, X> = {
