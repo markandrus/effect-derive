@@ -26,7 +26,7 @@
     "generate:RoseTree": "node src/index.ts Covariant Foldable Traversable --for-type RoseTree --in-file src/example/RoseTree.ts --out-file src/example/RoseTree.derived.ts --covariant '@effect/typeclass/data/Array#Covariant#ReadonlyArray<_>' --foldable '@effect/typeclass/data/Array#Foldable#ReadonlyArray<_>' --traversable '@effect/typeclass/data/Array#Traversable#ReadonlyArray<_>'",
     "generate:Sum": "node src/index.ts Covariant Foldable Traversable --for-type Sum --discriminator type --in-file src/example/Sum.ts --out-file src/example/Sum.derived.ts",
     "prepublish": "rm -rf lib && tsc",
-    "test": "node test/index.ts"
+    "test": "node --test 'test/**/*.ts'"
   },
   "keywords": [
     "effect",

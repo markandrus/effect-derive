@@ -1,5 +1,5 @@
 import * as assert from 'node:assert'
-import { suite, test } from 'node:test'
+import { describe, test } from 'node:test'
 
 import { Foldable as ListFoldable } from '../src/example/List.derived.ts'
 import type { List } from '../src/example/List.ts'
@@ -46,7 +46,7 @@ const list: List<number> = {
 
 const array = [1, 2, 3]
 
-suite('List', () => {
+describe('List', () => {
   test('toArray implemented using reduce', () => {
     assert.deepStrictEqual(toArrayReduce(list), array)
   })

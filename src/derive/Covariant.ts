@@ -144,24 +144,7 @@ function handleTypeNode(
 
     updates += `, ${JSON.stringify(memberName)}: `
 
-    if (mapFunctions.length === 0) {
-      updates += `f(self[${JSON.stringify(memberName)}])`
-      continue
-    }
-
-    let i = 0
-    let suffix = ''
-    for (const mapFunction of mapFunctions) {
-      if (i++ === 0) {
-        updates += `${mapFunction}(self[${JSON.stringify(memberName)}], `
-        suffix += 'f)'
-      } else {
-        updates += `_ => ${mapFunction}(_, `
-        suffix += ')'
-      }
-    }
-
-    updates += suffix
+    updates += buildMapFunction(memberName, mapFunctions)
   }
 
   if (discriminator != null && discriminatorValue == null) {
@@ -179,4 +162,31 @@ function handleTypeNode(
       case ${discriminatorValue}:
         return ${updates}
 `
+}
+
+/**
+ * @visibleForTesting
+ */
+export function buildMapFunction(memberName: string, mapFunctions: string[]): string {
+  if (mapFunctions.length === 0) {
+    return `f(self[${JSON.stringify(memberName)}])`
+  }
+
+  let out = ''
+
+  let i = 0
+  let suffix = ''
+  for (const mapFunction of mapFunctions) {
+    if (i++ === 0) {
+      out += `${mapFunction}(self[${JSON.stringify(memberName)}], `
+      suffix += 'f)'
+    } else {
+      out += `_ => ${mapFunction}(_, `
+      suffix += ')'
+    }
+  }
+
+  out += suffix
+
+  return out
 }
